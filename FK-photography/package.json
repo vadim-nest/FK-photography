@@ -3,11 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "workspaces": ["sanity"],
   "scripts": {
     "dev": "vike dev",
     "build": "vike build",
     "preview": "vike preview",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "studio": "npm run dev --workspace sanity"
   },
   "dependencies": {
     "react": "^19.1.1",
