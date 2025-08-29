@@ -1,6 +1,3 @@
-import seo from './objects/seo.js'
-import imageWithMeta from './objects/imageWithMeta.js'
-
 export default {
   name: 'page',
   title: 'Page',

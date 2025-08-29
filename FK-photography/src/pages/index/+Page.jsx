@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react"
-import { navigationQuery } from "../../queries/navigation"
-import { sanity } from "../../lib/sanity/client"
+import { useEffect, useState } from "react";
+import { navigationQuery } from "../../lib/queries/navigation";
+import { sanity } from "../../lib/sanity/client";
 
 function Page() {
-  const [navItems, setNavItems] = useState([])
+  const [navItems, setNavItems] = useState([]);
 
   useEffect(() => {
     sanity.fetch(navigationQuery).then((data) => {
-      console.log("Navigation items:", data)
-      setNavItems(data)
-    })
-  }, [])
+      console.log("Navigation items:", data);
+      setNavItems(data);
+    });
+  }, []);
 
   return (
     <header>
@@ -25,7 +25,7 @@ function Page() {
         </ul>
       </nav>
     </header>
-  )
+  );
 }
 
-export default Page
+export default Page;

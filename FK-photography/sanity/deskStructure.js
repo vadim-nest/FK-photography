@@ -12,4 +12,5 @@ export const deskStructure = (S) =>
       S.documentTypeListItem('page'),
       S.documentTypeListItem('story'),
       S.documentTypeListItem('gallery'),
+      S.documentTypeListItem('post'),
     ])
