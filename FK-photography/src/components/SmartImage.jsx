@@ -54,7 +54,7 @@ export function SmartImage({
         alt={alt || image?.alt || ""}
         loading={priority ? "eager" : "lazy"}
         decoding="async"
-        fetchpriority={priority ? "high" : "auto"}
+        fetchPriority={priority ? "high" : "auto"}
         onLoad={() => setLoaded(true)}
         onError={() => setLoaded(true)} // don't keep it blurry forever on error
         style={{
