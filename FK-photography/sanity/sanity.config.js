@@ -21,4 +21,11 @@ export default defineConfig({
   schema: {
     types: schemaTypes,
   },
+
+  document: {
+    actions: (prev, context) =>
+      context.schemaType === 'homepage'
+        ? prev.filter((a) => !['unpublish', 'delete', 'duplicate'].includes(a.action))
+        : prev,
+  },
 })

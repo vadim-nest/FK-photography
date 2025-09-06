@@ -1,29 +1,14 @@
-import { useEffect, useState } from "react";
-import { navigationQuery } from "../../lib/queries/navigation";
-import { sanity } from "../../lib/sanity/client";
+import { useData } from "vike-react/useData";
+import { PortableText } from "@portabletext/react";
+import { PortableBody } from "@/components/PortableBody";
 
 function Page() {
-  const [navItems, setNavItems] = useState([]);
-
-  useEffect(() => {
-    sanity.fetch(navigationQuery).then((data) => {
-      console.log("Navigation items:", data);
-      setNavItems(data);
-    });
-  }, []);
+  const { homepage } = useData();
 
   return (
     <header>
       <h1>Homepage</h1>
-      <nav>
-        <ul>
-          {navItems.map((item) => (
-            <li key={item._id}>
-              <a href={item.href}>{item.title}</a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <PortableBody value={homepage.content} />
     </header>
   );
 }

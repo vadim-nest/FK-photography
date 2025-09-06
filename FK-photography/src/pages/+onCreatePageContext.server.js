@@ -8,6 +8,7 @@ export async function onCreatePageContext(pageContext) {
     const nav = await sanity.fetch(navigationQuery);
     pageContext.nav = nav; // attach to pageContext
   } catch (e) {
+    console.error(e);
     pageContext.nav = []; // fail-safe
   }
 }

@@ -1,58 +1,30 @@
-// pages/blog/@slug/+Page.jsx
 import React, { useMemo } from "react";
 import { useData } from "vike-react/useData";
-import { PortableText } from "@portabletext/react";
-import { SmartImage } from "../../../components/SmartImage.jsx";
+import { PortableBody } from "@/components/PortableBody.jsx";
 import LightboxProvider from "@/context/LightboxProvider.jsx";
 import { useLightbox } from "@/context/useLightbox.js";
 import { toLightboxSlide } from "../../../lib/sanity/toLightboxSlide.js";
 
 function BodyWithLightbox({ blocks }) {
   const lightbox = useLightbox();
-
-  // collect all images once to form a gallery
   const images = useMemo(
     () =>
-      (blocks || [])
-        .filter((b) => b?._type === "image" || b?._type === "imageWithMeta")
-        .map((b) => b),
+      (blocks || []).filter(
+        (b) => b && (b._type === "image" || b._type === "imageWithMeta")
+      ),
     [blocks]
   );
-
   const slides = useMemo(
-    () => images.map((img) => toLightboxSlide(img)),
+    () => images.map(toLightboxSlide).filter(Boolean),
     [images]
   );
 
-  const components = {
-    types: {
-      image: ({ value }) => {
-        const idx = images.findIndex((img) => img._key === value._key);
-        return (
-          <figure className="my-5">
-            <button
-              type="button"
-              onClick={() => lightbox.show(slides, Math.max(0, idx))}
-              className="block overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600"
-            >
-              <SmartImage
-                image={value}
-                sizes="(max-width: 900px) 100vw, 900px"
-              />
-            </button>
-            {value?.caption && (
-              <figcaption className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-                {value.caption}
-              </figcaption>
-            )}
-          </figure>
-        );
-      },
-      imageWithMeta: ({ value }) => components.types.image({ value }), // reuse
-    },
+  const handleClick = (value) => {
+    const idx = images.findIndex((img) => img._key === value._key);
+    lightbox.show(slides, Math.max(0, idx));
   };
 
-  return <PortableText value={blocks} components={components} />;
+  return <PortableBody value={blocks} onImageClick={handleClick} />;
 }
 
 export default function PostPage() {
