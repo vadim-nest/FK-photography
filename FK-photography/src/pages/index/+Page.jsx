@@ -14,7 +14,7 @@ function Page() {
 
   return (
     <header>
-      <h1>My Site</h1>
+      <h1>Homepage</h1>
       <nav>
         <ul>
           {navItems.map((item) => (

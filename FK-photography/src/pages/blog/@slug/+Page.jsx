@@ -64,12 +64,12 @@ export default function PostPage() {
       <article className="mx-auto max-w-[900px] p-5">
         <header className="grid gap-4">
           <h1 className="text-3xl font-bold">{post.title}</h1>
-          {post.heroImage && (
+          {/* {post.heroImage && (
             <SmartImage
               image={post.heroImage}
               sizes="(max-width: 900px) 100vw, 900px"
             />
-          )}
+          )} */}
         </header>
         <section className="mt-6 prose prose-zinc dark:prose-invert">
           {post.body?.length ? (
