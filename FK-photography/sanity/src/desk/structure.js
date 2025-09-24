@@ -1,3 +1,4 @@
+// Desk structure with two singletons (Homepage, Site Settings)
 export const deskStructure = (S) =>
   S.list()
     .title('Content')
@@ -8,6 +9,7 @@ export const deskStructure = (S) =>
       S.listItem()
         .title('Site Settings')
         .child(S.editor().id('siteSettings').schemaType('siteSettings').documentId('siteSettings')),
+      S.divider(),
       S.documentTypeListItem('navigationItem'),
       S.divider(),
       S.documentTypeListItem('page'),

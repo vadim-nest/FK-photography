@@ -1,18 +1,19 @@
-export default {
+import {defineType, defineField} from 'sanity'
+
+export default defineType({
   name: 'homepage',
   title: 'Homepage',
   type: 'document',
   fields: [
-    {
+    defineField({
       name: 'content',
       title: 'Content',
-      type: 'array',
-      of: [{type: 'block'}, {type: 'imageWithMeta'}],
+      type: 'richText',
       validation: (Rule) => Rule.min(0),
-    },
-    {name: 'seo', title: 'SEO', type: 'seo'},
+    }),
+    defineField({name: 'seo', title: 'SEO', type: 'seo'}),
   ],
   preview: {
     prepare: () => ({title: 'Homepage'}),
   },
-}
+})
