@@ -1,35 +1,9 @@
-import React, { useMemo } from "react";
 import { useData } from "vike-react/useData";
-import { PortableBody } from "@/components/PortableBody.jsx";
 import LightboxProvider from "@/context/LightboxProvider.jsx";
-import { useLightbox } from "@/context/useLightbox.js";
-import { toLightboxSlide } from "../../../lib/sanity/toLightboxSlide.js";
-
-function BodyWithLightbox({ blocks }) {
-  const lightbox = useLightbox();
-  const images = useMemo(
-    () =>
-      (blocks || []).filter(
-        (b) => b && (b._type === "image" || b._type === "imageWithMeta")
-      ),
-    [blocks]
-  );
-  const slides = useMemo(
-    () => images.map(toLightboxSlide).filter(Boolean),
-    [images]
-  );
-
-  const handleClick = (value) => {
-    const idx = images.findIndex((img) => img._key === value._key);
-    lightbox.show(slides, Math.max(0, idx));
-  };
-
-  return <PortableBody value={blocks} onImageClick={handleClick} />;
-}
+import { BodyWithLightbox } from "@/components/BodyWithLightbox.jsx";
 
 export default function PostPage() {
   const { post } = useData();
-  if (!post) return <p>Not found</p>;
 
   return (
     <LightboxProvider>

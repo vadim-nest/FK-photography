@@ -1,5 +1,4 @@
 import { useData } from "vike-react/useData";
-import { PortableText } from "@portabletext/react";
 import { PortableBody } from "@/components/PortableBody";
 
 function Page() {

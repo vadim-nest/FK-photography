@@ -5,7 +5,7 @@ export function Navbar({ items }) {
   const go = (e, href) => {
     e.preventDefault();
     navigate(href);
-  };  
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
@@ -21,7 +21,7 @@ export function Navbar({ items }) {
           {(items || []).map((item) => (
             <a
               key={item._id}
-              href={item.href}
+              href={`/${item.href}`}
               // onClick={(e) => go(e, item.href)}
               className="text-sm font-medium hover:underline"
             >
