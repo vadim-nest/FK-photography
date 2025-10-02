@@ -1,6 +1,6 @@
 import React from "react";
 import { useData } from "vike-react/useData";
-import { BlogCard } from "@/components/BlogCard";
+import { BlogCard } from "@/components/blog/BlogCard";
 
 export default function BlogIndex() {
   const { posts = [] } = useData();

@@ -1,4 +1,4 @@
-import { sanity } from "../../../lib/sanity/client.js";
+import { sanity } from "@/lib/sanity/client.js";
 
 export default async function onBeforePrerenderStart() {
   // Fetch all post slugs; keep it cheap (no heavy fields)

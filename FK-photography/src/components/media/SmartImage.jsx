@@ -1,6 +1,6 @@
 // src/components/SmartImage.jsx
 import React, { useEffect, useRef, useState } from "react";
-import { urlFor } from "../lib/sanity/sanityImage.js";
+import { urlFor } from "@/lib/sanity/image";
 
 export function SmartImage({
   image,

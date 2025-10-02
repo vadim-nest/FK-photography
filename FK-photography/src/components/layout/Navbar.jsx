@@ -1,31 +1,17 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
+// src/components/layout/Navbar.jsx
+import React from "react";
 import { navigate } from "vike/client/router";
-import { sanity } from "@/lib/sanity/client";
-import { navigationQuery } from "@/lib/queries/navigation";
-
-// shadcn/ui
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 
-export function Navbar() {
-  const [navItems, setNavItems] = useState([]);
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    sanity.fetch(navigationQuery).then(setNavItems).catch(console.error);
-  }, []);
-
+export function Navbar({ items = [] }) {
+  const [open, setOpen] = React.useState(false);
   const ensureLeadingSlash = (href = "") =>
     href.startsWith("/") ? href : `/${href}`;
-
   const go = (e, href, { closeSheet } = {}) => {
     e.preventDefault();
-    const to = ensureLeadingSlash(href);
-    // Use Vike client routing for fast nav; still keep real href for SSR/SEO.
-    navigate(to);
+    navigate(ensureLeadingSlash(href));
     if (closeSheet) setOpen(false);
   };
 
@@ -40,9 +26,8 @@ export function Navbar() {
           FK Photography
         </a>
 
-        {/* Desktop */}
         <nav className="hidden gap-6 md:flex">
-          {navItems.map((item) => {
+          {items.map((item) => {
             const href = ensureLeadingSlash(item.href);
             return (
               <a
@@ -57,7 +42,6 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Mobile */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button
@@ -71,7 +55,7 @@ export function Navbar() {
           </SheetTrigger>
           <SheetContent side="right" className="w-80">
             <nav className="mt-6 grid gap-1">
-              {navItems.map((item, i) => {
+              {items.map((item, i) => {
                 const href = ensureLeadingSlash(item.href);
                 return (
                   <React.Fragment key={item._id}>
@@ -82,7 +66,7 @@ export function Navbar() {
                     >
                       {item.title}
                     </a>
-                    {i < navItems.length - 1 && <Separator />}
+                    {i < items.length - 1 && <Separator />}
                   </React.Fragment>
                 );
               })}

@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
-import { PortableBody } from "@/components/PortableBody.jsx";
-import { useLightbox } from "@/context/useLightbox.js";
+import { PortableBody } from "@/components/portable/PortableBody.jsx";
+import { useLightbox } from "@/hooks/useLightbox.js";
 import { toLightboxSlide } from "@/lib/sanity/toLightboxSlide.js";
 
 export function BodyWithLightbox({ blocks }) {

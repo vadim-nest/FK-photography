@@ -1,5 +1,5 @@
 import { useData } from "vike-react/useData";
-import LightboxProvider from "@/context/LightboxProvider.jsx";
+import LightboxProvider from "@/providers/LightboxProvider.jsx";
 import { BodyWithLightbox } from "@/components/BodyWithLightbox.jsx";
 
 export default function PostPage() {

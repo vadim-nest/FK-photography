@@ -1,7 +1,7 @@
 export { data };
 
 import { sanity } from "@/lib/sanity/client";
-import { homepageQuery } from "@/lib/queries/homepage";
+import { homepageQuery } from "@/lib/sanity/queries";
 
 async function data() {
   const homepage = await sanity.fetch(homepageQuery);

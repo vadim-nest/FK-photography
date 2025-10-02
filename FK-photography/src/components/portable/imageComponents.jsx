@@ -1,4 +1,4 @@
-import { SmartImage } from "@/components/SmartImage.jsx";
+import { SmartImage } from "@/components/media/SmartImage.jsx";
 
 export function makeImageComponents({ onImageClick } = {}) {
   const Figure = ({ value }) => {    

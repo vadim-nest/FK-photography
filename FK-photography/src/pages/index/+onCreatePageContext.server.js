@@ -2,7 +2,7 @@
 export async function onCreatePageContext(pageContext) {
   // Fetch from Sanity (or wherever)
   const { sanity } = await import("@/lib/sanity/client.js");
-  const { navigationQuery } = await import("@/lib/sanity/queries");
+  const { navigationQuery } = await import("@/lib/sanity/queries/index.js");
 
   try {
     const nav = await sanity.fetch(navigationQuery);

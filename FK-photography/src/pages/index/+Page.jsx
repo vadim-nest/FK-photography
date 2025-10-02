@@ -1,5 +1,5 @@
 import { useData } from "vike-react/useData";
-import { PortableBody } from "@/components/PortableBody";
+import { PortableBody } from "@/components/portable/PortableBody";
 
 function Page() {
   const { homepage } = useData();

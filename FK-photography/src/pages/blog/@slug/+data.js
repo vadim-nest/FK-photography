@@ -1,5 +1,5 @@
-import { sanity } from "../../../lib/sanity/client.js";
-import { POST_BY_SLUG } from "../../../lib/queries/posts.js";
+import { sanity } from "@/lib/sanity/client.js";
+import { POST_BY_SLUG } from "@/lib/sanity/queries";
 
 export async function data(pageContext) {
   // Vike gives you route params as pageContext.routeParams

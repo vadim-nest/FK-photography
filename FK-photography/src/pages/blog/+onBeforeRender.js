@@ -1,4 +1,4 @@
-import { fetchPostsPage } from "../../lib/queries/posts.js";
+import { fetchPostsPage } from "@/lib/sanity/queries";
 
 export async function onBeforeRender() {
   const posts = await fetchPostsPage();

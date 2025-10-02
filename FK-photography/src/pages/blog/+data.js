@@ -1,6 +1,6 @@
 // Server-only: fetched at build-time (prerender) or on-demand in dev
-import { sanity } from "../../lib/sanity/client.js";
-import { POSTS_PAGE } from "../../lib/queries/posts.js";
+import { sanity } from "@/lib/sanity/client.js";
+import { POSTS_PAGE } from "@/lib/sanity/queries";
 
 export async function data() {
   // first page only; add pagination later

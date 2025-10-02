@@ -1,4 +1,4 @@
-import { sanity } from "../sanity/client";
+import { sanity } from "@/lib/sanity/client";
 
 // src/lib/queries/posts.js
 export const POSTS_LIST = `*[_type == "post"] | order(publishedAt desc){

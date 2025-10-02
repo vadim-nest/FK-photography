@@ -1,5 +1,5 @@
 import { PortableText } from "@portabletext/react";
-import { makeImageComponents } from "@/lib/portable/imageComponents.jsx";
+import { makeImageComponents } from "@/components/portable/imageComponents.jsx";
 
 export function PortableBody({ value, onImageClick }) {
   return (

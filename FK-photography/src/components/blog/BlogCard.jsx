@@ -1,5 +1,5 @@
 import React from "react";
-import { SmartImage } from "./SmartImage.jsx";
+import { SmartImage } from "@/components/media/SmartImage.jsx";
 import { navigate } from "vike/client/router";
 // shadcn
 import { Card, CardContent } from "@/components/ui/card";
