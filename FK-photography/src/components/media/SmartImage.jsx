@@ -1,4 +1,4 @@
-// src/components/SmartImage.jsx
+// src/components/media/SmartImage.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { urlFor } from "@/lib/sanity/image";
 
@@ -8,7 +8,7 @@ export function SmartImage({
   sizes = "(max-width: 800px) 100vw, 1200px",
   widths = [400, 800, 1200, 1600],
   aspect,
-  className,
+  className = "",
   priority = false,
 }) {
   const meta = image?.asset?.metadata || {};
@@ -22,28 +22,19 @@ export function SmartImage({
   const [loaded, setLoaded] = useState(false);
   const imgRef = useRef(null);
 
-  // ✅ If the image is already cached, `onLoad` may not fire.
-  // Check `complete` on mount and after src changes.
   useEffect(() => {
     const img = imgRef.current;
-    if (img && img.complete && img.naturalWidth > 0) {
-      setLoaded(true);
-    }
+    if (img && img.complete && img.naturalWidth > 0) setLoaded(true);
   }, [src]);
 
   if (!image?.asset) return null;
 
   return (
     <div
-      className={className}
+      className={`relative overflow-hidden rounded-lg bg-cover bg-center ${className}`}
       style={{
-        position: "relative",
-        overflow: "hidden",
-        borderRadius: "8px",
-        backgroundImage: lqip ? `url(${lqip})` : undefined,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
         aspectRatio: ratio,
+        backgroundImage: lqip ? `url(${lqip})` : undefined,
       }}
     >
       <img
@@ -56,23 +47,17 @@ export function SmartImage({
         decoding="async"
         fetchPriority={priority ? "high" : "auto"}
         onLoad={() => setLoaded(true)}
-        onError={() => setLoaded(true)} // don't keep it blurry forever on error
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          display: "block",
-          filter: loaded ? "blur(0px)" : "blur(12px)",
-          transform: loaded ? "scale(1)" : "scale(1.03)",
-          transition: "filter 250ms ease, transform 250ms ease",
-          willChange: "filter, transform",
-        }}
+        onError={() => setLoaded(true)}
+        className={[
+          "w-full h-full object-cover block",
+          "transition-[filter,transform] duration-[250ms] ease-out",
+          "will-change-[filter,transform]",
+          loaded ? "blur-none scale-100" : "blur-md scale-[1.03]",
+        ].join(" ")}
       />
       <style>{`
-        @media (prefers-reduced-motion: reduce) {
-          img { transition: none !important; }
-        }
-      `}</style>
+@media (prefers-reduced-motion: reduce) { img { transition: none !important; } }
+`}</style>
     </div>
   );
 }

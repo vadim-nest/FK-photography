@@ -1,8 +1,9 @@
+// src/providers/LightboxProvider.jsx
 import React, { useMemo, useState } from "react";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { LightboxContext } from "@/hooks/useLightbox";
-import { Zoom } from "yet-another-react-lightbox/plugins";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
 
 export default function LightboxProvider({ children }) {
   const [slides, setSlides] = useState([]);

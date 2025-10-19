@@ -1,12 +1,11 @@
-// Server-only: fetched at build-time (prerender) or on-demand in dev
-import { sanity } from "@/lib/sanity/client.js";
-import { POSTS_PAGE } from "@/lib/sanity/queries";
+// src/pages/blog/+data.js (server-only)
+import { POSTS_PAGE, fetchPostsPage } from "@/lib/sanity/queries";
 
 export async function data() {
-  // first page only; add pagination later
   const offset = 0;
   const limit = 12;
-  const to = offset + limit;
-  const posts = await sanity.fetch(POSTS_PAGE, { offset, to });
+  // Either use the GROQ with params or the helper; keeping both as examples.
+  // const posts = await sanity.fetch(POSTS_PAGE, { offset, to: offset + limit });
+  const posts = await fetchPostsPage(offset, limit);
   return { posts };
 }

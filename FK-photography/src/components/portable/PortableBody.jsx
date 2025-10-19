@@ -1,3 +1,5 @@
+// src/components/portable/PortableBody.jsx
+import React from "react";
 import { PortableText } from "@portabletext/react";
 import { makeImageComponents } from "@/components/portable/imageComponents.jsx";
 

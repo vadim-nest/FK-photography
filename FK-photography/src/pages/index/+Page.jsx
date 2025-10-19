@@ -1,15 +1,14 @@
+// src/pages/index/+Page.jsx
+import React from "react";
 import { useData } from "vike-react/useData";
 import { PortableBody } from "@/components/portable/PortableBody";
 
-function Page() {
+export default function Page() {
   const { homepage } = useData();
-
   return (
     <header>
-      <h1>Homepage</h1>
-      <PortableBody value={homepage.content} />
+      <h1 className="text-3xl font-bold">Homepage</h1>
+      <PortableBody value={homepage?.content} />
     </header>
   );
 }
-
-export default Page;
