@@ -13,7 +13,7 @@ export function makeImageComponents({ onImageClick } = {}) {
           className={
             onImageClick
               ? "block overflow-hidden rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              : undefined
+              : "w-full"
           }
           aria-label={onImageClick ? "Open image in lightbox" : undefined}
         >

@@ -6,9 +6,8 @@ import { PortableBody } from "@/components/portable/PortableBody";
 export default function Page() {
   const { homepage } = useData();
   return (
-    <header>
-      <h1 className="text-3xl font-bold">Homepage</h1>
+    <div>
       <PortableBody value={homepage?.content} />
-    </header>
+    </div>
   );
 }

@@ -31,7 +31,7 @@ export function SmartImage({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-lg bg-cover bg-center ${className}`}
+      className={`relative overflow-hidden bg-cover bg-center ${className}`}
       style={{
         aspectRatio: ratio,
         backgroundImage: lqip ? `url(${lqip})` : undefined,
