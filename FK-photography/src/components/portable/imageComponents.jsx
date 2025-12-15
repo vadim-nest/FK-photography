@@ -12,7 +12,7 @@ export function makeImageComponents({ onImageClick } = {}) {
           onClick={handleClick}
           className={
             onImageClick
-              ? "block overflow-hidden rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              ? "block overflow-hidden rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
               : "w-full"
           }
           aria-label={onImageClick ? "Open image in lightbox" : undefined}
@@ -20,11 +20,11 @@ export function makeImageComponents({ onImageClick } = {}) {
           <SmartImage
             image={value}
             alt={value?.alt || ""}
-            sizes="(max-width: 900px) 100vw, 900px"
+            sizes="(max-width: 1122px) 100vw, 1122px"
           />
         </button>
         {value?.caption && (
-          <figcaption className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+          <figcaption className="text-center mt-2 text-sm text-zinc-800 ">
             {value.caption}
           </figcaption>
         )}

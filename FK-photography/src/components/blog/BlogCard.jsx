@@ -47,13 +47,17 @@ export function BlogCard({ post }) {
       )}
 
       {/* 3. THE CARD */}
-      <Card className="relative flex h-full w-full flex-col overflow-hidden rounded-2xl border-0 shadow-sm cursor-pointer">
-        {/* --- INTERNAL BACKGROUND LAYER --- */}
-        {post?.heroImage && (
-          <>
-            {/* A. The Blurred Image Base */}
-            {/* OPTIMIZATION: Use LQUIP or Tiny Image */}
+      <a
+        href={href}
+        onClick={(e) => go(e, href)}
+        aria-describedby={post?.excerpt ? excerptId : undefined}
+        className="decoration-2 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <Card className="relative flex h-full w-full flex-col overflow-hidden rounded-2xl border-0 shadow-sm cursor-pointer">
+          {/* --- INTERNAL BACKGROUND LAYER --- */}
+          {post?.heroImage && (
             <div className="absolute inset-0 -z-10 h-full w-full select-none bg-white">
+              {/* OPTIMIZATION: Use LQUIP or Tiny Image */}
               {lqip ? (
                 <img
                   src={lqip}
@@ -70,61 +74,35 @@ export function BlogCard({ post }) {
                 />
               )}
             </div>
-
-            {/* B. Glass Overlay (Optional if you want it) */}
-            {/* <div className="absolute inset-0 -z-10 bg-white/40 dark:bg-black/10" /> */}
-          </>
-        )}
-
-        {/* --- 4. Main Image (High Quality) --- */}
-        <div className="relative w-full aspect-[4/3] overflow-hidden">
-          {post?.heroImage && (
-            <SmartImage
-              image={post.heroImage}
-              alt={post?.heroImage?.alt || post?.title || ""}
-              sizes="(max-width: 700px) 100vw, 33vw"
-              // Keep high quality here
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-102"
-            />
-          )}
-        </div>
-
-        {/* --- 5. Content --- */}
-        <CardContent className="flex flex-1 flex-col p-6 bg-transparent">
-          <h2 className="m-0 text-[1.75rem] leading-tight">
-            <a
-              href={href}
-              onClick={(e) => go(e, href)}
-              aria-describedby={post?.excerpt ? excerptId : undefined}
-              className="decoration-2 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {post?.title || "Untitled"}
-            </a>
-          </h2>
-
-          {post?.excerpt && (
-            <p id={excerptId} className="line-clamp-3 text-xl mt-5">
-              {post.excerpt}
-            </p>
           )}
 
-          <div className="mt-auto pt-4">
-            <Button
-              variant="link"
-              className="px-0 text-base font-semibold"
-              asChild
-            >
-              <a
-                href={href}
-                onClick={(e) => go(e, href)}
-                aria-label={`Read more: ${post?.title ?? "post"}`}
-              >
-                Read more →
-              </a>
-            </Button>
+          {/* --- 4. Main Image (High Quality) --- */}
+          <div className="relative w-full aspect-[4/3] overflow-hidden">
+            {post?.heroImage && (
+              <SmartImage
+                image={post.heroImage}
+                alt={post?.heroImage?.alt || post?.title || ""}
+                sizes="(max-width: 700px) 100vw, 33vw"
+                // Keep high quality here
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-102"
+              />
+            )}
           </div>
-        </CardContent>
-      </Card>
+
+          {/* --- 5. Content --- */}
+          <CardContent className="flex flex-1 flex-col p-6 bg-transparent">
+            <h2 className="m-0 text-[1.75rem] leading-tight">
+              {post?.title || "Untitled"}
+            </h2>
+
+            {post?.excerpt && (
+              <p id={excerptId} className="line-clamp-3 text-xl mt-5">
+                {post.excerpt}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </a>
     </div>
   );
 }
