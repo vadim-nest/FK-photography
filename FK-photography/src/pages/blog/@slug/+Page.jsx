@@ -3,7 +3,6 @@ import React, { useMemo } from "react";
 import { useData } from "vike-react/useData";
 import LightboxProvider from "@/providers/LightboxProvider.jsx";
 import { BodyWithLightbox } from "@/components/BodyWithLightbox.jsx";
-import { SmartImage } from "@/components/media/SmartImage";
 
 // --- Helper Functions ---
 
@@ -54,9 +53,6 @@ export default function PostPage() {
     );
   }
 
-  // Find the first image for the blurred background
-  const firstImg = post.body.find((c) => c._type === "imageWithMeta");
-
   // Calculate metadata
   const dateStr = formatDate(post.publishedAt || post._createdAt);
 
@@ -66,19 +62,10 @@ export default function PostPage() {
         {/* --- Background Blur Layer --- */}
         <div
           className={[
-            "absolute top-0 inset-x-0 -z-10 h-[125vh] w-full overflow-hidden rounded-2xl",
-            "[mask-image:linear-gradient(to_bottom,black_80%,transparent_100%)]",
+            "absolute top-0 inset-x-0 -z-10 h-[125vh] w-full overflow-hidden rounded-2xl bg-[#E0E1E0]",
+            "[mask-image:linear-gradient(to_bottom,black_30%,transparent_100%)]",
           ].join(" ")}
-        >
-          {firstImg && (
-            <SmartImage
-              image={firstImg}
-              width={50}
-              className="h-full w-full object-cover blur-xl opacity-50 dark:opacity-35 scale-110"
-              aria-hidden="true"
-            />
-          )}
-        </div>
+        ></div>
 
         {/* 1. ALLOW ARTICLE TO BE WIDE */}
         <article className="mx-auto max-w-5xl p-5">

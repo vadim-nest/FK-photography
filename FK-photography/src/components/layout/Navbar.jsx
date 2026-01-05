@@ -17,16 +17,13 @@ export function Navbar({ items = [] }) {
 
   return (
     <header
-      className={[
-        "sticky top-8 z-50 rounded-2xl border-b border-black/10 bg-white/80",
-        "backdrop-blur-md dark:border-white/10 dark:bg-zinc-950/12",
-      ].join(" ")}
+      className={["sticky top-8 z-50 rounded-2xl bg-[#E0E1E0] shadow-lg"].join(" ")}
     >
       <a
         href="#main"
         className={[
           "sr-only focus:not-sr-only focus:absolute focus:inset-x-4 focus:top-4",
-          "focus:rounded focus:bg-background focus:px-3 focus:py-2",
+          "focus:rounded focus:bg-background focus:px-3 focus:py-2  ",
         ].join(" ")}
       >
         Skip to content
