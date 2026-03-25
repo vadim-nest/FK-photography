@@ -38,5 +38,6 @@ export default defineType({
       },
     },
     {type: 'imageWithMeta'},
+    {type: 'bentoGallery'},
   ],
 })

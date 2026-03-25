@@ -6,7 +6,7 @@ import { PortableBody } from "@/components/portable/PortableBody";
 export default function Page() {
   const { homepage } = useData();
   return (
-    <div>
+    <div className="w-7xl max-w-full mx-auto">
       <PortableBody value={homepage?.content} />
     </div>
   );

@@ -3,6 +3,7 @@ import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './src/schemas'
 import {deskStructure} from './src/desk/structure'
+import {media, mediaAssetSource} from 'sanity-plugin-media'
 
 export default defineConfig({
   name: 'default',
@@ -11,7 +12,22 @@ export default defineConfig({
   projectId: 'z4m6r2xn',
   dataset: 'production',
 
-  plugins: [structureTool({structure: deskStructure}), visionTool()],
+  plugins: [media(), structureTool({structure: deskStructure}), visionTool()],
+
+  form: {
+    image: {
+      // 2. Explicitly set the mediaAssetSource as the only option
+      assetSources: (previousAssetSources) => {
+        return [mediaAssetSource]
+      },
+    },
+    // Do the same for files if you use them
+    file: {
+      assetSources: (previousAssetSources) => {
+        return [mediaAssetSource]
+      },
+    },
+  },
 
   schema: {
     types: schemaTypes,

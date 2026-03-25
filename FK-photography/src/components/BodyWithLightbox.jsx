@@ -3,30 +3,55 @@ import React, { useMemo, useCallback } from "react";
 import { PortableBody } from "@/components/portable/PortableBody.jsx";
 import { useLightbox } from "@/hooks/useLightbox.js";
 import { toLightboxSlide } from "@/lib/sanity/toLightboxSlide.js";
+import { BentoGrid } from "./blog/BentoGrid";
 
 export function BodyWithLightbox({ blocks }) {
   const lightbox = useLightbox();
 
-  const images = useMemo(
-    () =>
-      (blocks || []).filter(
-        (b) => b && (b._type === "image" || b._type === "imageWithMeta")
-      ),
-    [blocks]
-  );
+  // Create a flat array of all images in the post for the lightbox
+  const allImages = useMemo(() => {
+    if (!blocks) return [];
+    return blocks.flatMap((block) => {
+      if (block._type === "image" || block._type === "imageWithMeta")
+        return [block];
+      if (block._type === "bentoGallery") return block.images || [];
+      return [];
+    });
+  }, [blocks]);
 
   const slides = useMemo(
-    () => images.map(toLightboxSlide).filter(Boolean),
-    [images]
+    () => allImages.map(toLightboxSlide).filter(Boolean),
+    [allImages],
   );
 
   const handleClick = useCallback(
-    (value) => {
-      const idx = images.findIndex((img) => img._key === value._key);
-      lightbox.show(slides, Math.max(0, idx));
+    (clickedValue) => {
+      // Find index by comparing the Sanity _key or the URL
+      const idx = allImages.findIndex(
+        (img) =>
+          (img._key && img._key === clickedValue._key) ||
+          img.url === clickedValue.url,
+      );
+      if (idx > -1) {
+        lightbox.show(slides, idx);
+      }
     },
-    [images, slides, lightbox]
+    [allImages, slides, lightbox],
   );
 
-  return <PortableBody value={blocks} onImageClick={handleClick} />;
+  const bentoComponent = {
+    types: {
+      bentoGallery: ({ value }) => (
+        <BentoGrid value={value} onImageClick={handleClick} />
+      ),
+    },
+  };
+
+  return (
+    <PortableBody
+      value={blocks}
+      onImageClick={handleClick}
+      components={bentoComponent}
+    />
+  );
 }

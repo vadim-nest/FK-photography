@@ -2,100 +2,122 @@
 import React from "react";
 import { SmartImage } from "@/components/media/SmartImage.jsx";
 import { navigate } from "vike/client/router";
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
-export function BlogCard({ post, variant = "vertical" }) {
+// Category colour map — extend as needed
+const CAT_COLOURS = {
+  blog:  { text: "text-[#7a5838]", border: "border-[rgba(122,88,56,0.35)]",  bg: "bg-[rgba(122,88,56,0.06)]"  },
+  news:  { text: "text-[#2a6a50]", border: "border-[rgba(42,106,80,0.35)]",  bg: "bg-[rgba(42,106,80,0.06)]"  },
+  essay: { text: "text-[#5848a0]", border: "border-[rgba(88,72,160,0.35)]",  bg: "bg-[rgba(88,72,160,0.06)]"  },
+};
+
+function CategoryPill({ category }) {
+  if (!category) return null;
+  const key = category.toLowerCase();
+  const colours = CAT_COLOURS[key] ?? {
+    text: "text-[#57524d]",
+    border: "border-[rgba(87,82,77,0.3)]",
+    bg: "bg-[rgba(87,82,77,0.05)]",
+  };
+  return (
+    <span
+      className={[
+        "inline-block font-mono text-[0.6rem] tracking-[0.16em] uppercase",
+        "px-[0.55rem] py-[0.22rem] border rounded-[2px]",
+        colours.text, colours.border, colours.bg,
+      ].join(" ")}
+    >
+      {category}
+    </span>
+  );
+}
+
+export function BlogCard({ post }) {
   const slug = post?.slug || "";
   const href = `/blog/${slug}`;
 
   const go = React.useCallback((e, to) => {
     if (e.defaultPrevented) return;
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0)
-      return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     e.preventDefault();
     navigate(to);
   }, []);
 
   const excerptId = React.useId();
+  const category = post?.category ?? post?.categories?.[0]?.title ?? null;
 
-  // Helper boolean to make class logic cleaner
-  const isHorizontal = variant === "horizontal";
+  // Format date
+  const dateStr = post?.publishedAt
+    ? new Date(post.publishedAt).toLocaleDateString("en-GB", {
+        day: "numeric", month: "short", year: "numeric",
+      })
+    : null;
+
+  const readTime = post?.readTime ? `${post.readTime} min` : null;
+  const commentCount = post?.commentCount ?? null;
 
   return (
-    <div className="group relative h-full w-full isolate">
-      {/* 3. THE CARD */}
+    <article className="group flex flex-col cursor-pointer">
       <a
         href={href}
         onClick={(e) => go(e, href)}
         aria-describedby={post?.excerpt ? excerptId : undefined}
-        className="block h-full decoration-2 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="flex flex-col gap-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8b6f4e] focus-visible:ring-offset-2 rounded-[1rem]"
       >
-        <Card
-          className={cn(
-            "bg-[#E0E1E0] transition duration-300 ease-in-out hover:shadow-lg relative flex h-full w-full overflow-hidden rounded-2xl border-0 cursor-pointer",
-            // Layout Logic: Vertical (default) vs Horizontal (Hero)
-            // On mobile, even horizontal cards usually stack, so we use md:flex-row
-            isHorizontal ? "flex-col md:flex-row" : "flex-col"
+        {/* ── Label row: category + date — sits ABOVE the image ── */}
+        <div className="flex items-center justify-between mb-[0.6rem]">
+          <CategoryPill category={category} />
+          {(dateStr || readTime) && (
+            <span className="font-mono text-[0.6rem] tracking-[0.08em] text-[#9e9890]">
+              {[dateStr, readTime].filter(Boolean).join(" · ")}
+            </span>
           )}
-        >
-          {/* --- 4. Main Image (High Quality) --- */}
-          <div
-            className={cn(
-              "relative overflow-hidden",
-              isHorizontal
-                ? "w-full md:w-1/2 lg:w-4/6 h-64 md:h-auto shrink-0" // Horizontal: Side-by-side on desktop, stacked on mobile
-                : "w-full aspect-[4/3]" // Vertical: Standard aspect ratio
-            )}
-          >
-            {post?.heroImage && (
-              <SmartImage
-                image={post.heroImage}
-                alt={post?.heroImage?.alt || post?.title || ""}
-                sizes={
-                  isHorizontal
-                    ? "(max-width: 768px) 100vw, 50vw"
-                    : "(max-width: 700px) 100vw, 33vw"
-                }
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-102"
-              />
-            )}
+        </div>
+
+        {/* ── Image — rounded corners, never cropped by object-fit cover ──
+            SmartImage renders at its natural aspect ratio.
+            The overflow-hidden + rounded-[1rem] clips the corners only.       */}
+        {post?.heroImage && (
+          <div className="w-full overflow-hidden rounded-[1rem]">
+            <SmartImage
+              image={post.heroImage}
+              alt={post?.heroImage?.alt || post?.title || ""}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
+              // No fixed height, no object-cover — image shows at natural ratio
+              className="w-full h-auto transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.03]"
+            />
           </div>
+        )}
 
-          {/* --- 5. Content --- */}
-          <CardContent
-            className={cn(
-              "flex flex-1 flex-col p-6 bg-transparent",
-              // Optional: Center content vertically for the horizontal hero card
-              isHorizontal ? "justify-center" : ""
-            )}
-          >
-            <h2
-              className={cn(
-                "m-0 leading-tight",
-                // Make the title slightly larger on the Hero card
-                isHorizontal ? "text-3xl md:text-4xl" : "text-[1.75rem]"
-              )}
+        {/* ── Body ── */}
+        <div className="pt-[0.95rem] flex flex-col gap-0">
+          <h2 className="font-display font-light text-[1.15rem] leading-[1.22] tracking-[-0.01em] text-[#1c1a17] mb-[0.55rem]">
+            {post?.title || "Untitled"}
+          </h2>
+
+          {post?.excerpt && (
+            <p
+              id={excerptId}
+              className="text-[0.94rem] leading-[1.65] text-[#57524d] mb-[0.8rem] line-clamp-3"
             >
-              {post?.title || "Untitled"}
-            </h2>
+              {post.excerpt}
+            </p>
+          )}
 
-            {post?.excerpt && (
-              <p
-                id={excerptId}
-                className={cn(
-                  "mt-5",
-                  isHorizontal
-                    ? "text-lg md:text-xl line-clamp-4"
-                    : "text-lg line-clamp-3"
-                )}
-              >
-                {post.excerpt}
-              </p>
+          {/* Footer row */}
+          <div className="flex items-center justify-between pt-[0.7rem] border-t border-[#cec8c0]">
+            {commentCount !== null ? (
+              <span className="font-mono text-[0.58rem] tracking-[0.08em] text-[#9e9890]">
+                {commentCount} {commentCount === 1 ? "comment" : "comments"}
+              </span>
+            ) : (
+              <span />
             )}
-          </CardContent>
-        </Card>
+            <span className="font-mono text-[0.62rem] tracking-[0.12em] uppercase text-[#57524d] transition-colors duration-200 group-hover:text-[#8b6f4e]">
+              Read →
+            </span>
+          </div>
+        </div>
       </a>
-    </div>
+    </article>
   );
 }

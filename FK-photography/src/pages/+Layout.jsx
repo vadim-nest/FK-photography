@@ -8,8 +8,8 @@ export default function Layout({ children }) {
   const { nav = [] } = usePageContext();
   return (
     <>
-      <div className="bg-[#F5F5F5]">
-        <div className="max-w-[90vw] mx-auto w-7xl min-h-screen h-fit">
+      <div className="bg-[#eae6e0]">
+        <div className="mx-auto min-h-screen h-fit">
           <Navbar items={nav} />
           <div className="pt-14" />
           {children}
