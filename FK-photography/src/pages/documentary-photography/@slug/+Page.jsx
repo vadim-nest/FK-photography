@@ -1,18 +1,13 @@
-// src/pages/documentary-photography/@slug/+Page.jsx
-
 import React, { useEffect, useRef, useMemo, useCallback } from "react";
 import { useData } from "vike-react/useData";
 import { navigate } from "vike/client/router";
 import LightboxProvider from "@/providers/LightboxProvider.jsx";
 import { useLightbox } from "@/hooks/useLightbox.js";
-
-// ─────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────
+import { YourView } from "@/components/ui/YourView.jsx";
+import { Newsletter } from "@/components/ui/Newsletter.jsx";
 
 function go(e, to) {
-  if (e.defaultPrevented) return;
-  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0)
+  if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
     return;
   e.preventDefault();
   navigate(to);
@@ -366,21 +361,17 @@ function PhotoRow({ row, rowIndex, onImageClick }) {
 // ─────────────────────────────────────────────
 // PROJECT HEADER
 // ─────────────────────────────────────────────
-// ORIGINAL: Restored entirely as requested
 
 function ProjectHeader({ project }) {
-  const navGo = React.useCallback((e, to) => go(e, to), []);
-
   return (
     <header className="mb-12 lg:mb-16 w-7xl max-w-full">
       <a
         href="/documentary-photography"
-        onClick={(e) => navGo(e, "/documentary-photography")}
+        onClick={(e) => go(e, "/documentary-photography")}
         className="inline-flex items-center gap-2 font-mono text-[0.6rem] tracking-[0.14em] uppercase text-[#9e9890] hover:text-[#1c1a17] transition-colors mb-8 no-underline"
       >
         ← Documentary
       </a>
-
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <span className="font-mono text-[0.6rem] tracking-[0.2em] uppercase text-[#c8a96e]">
           Social Documentary
@@ -402,19 +393,9 @@ function ProjectHeader({ project }) {
           </>
         )}
       </div>
-
-      <h1
-        className={[
-          "font-display font-light",
-          "text-[clamp(2.4rem,5vw,4rem)]",
-          "leading-[1.05] tracking-[-0.025em]",
-          "text-[#1c1a17]",
-          "mb-4",
-        ].join(" ")}
-      >
+      <h1 className="font-display font-light text-[clamp(2.4rem,5vw,4rem)] leading-[1.05] tracking-[-0.025em] text-[#1c1a17] mb-4">
         {project.title}
       </h1>
-
       {project.excerpt && (
         <p className="max-w-2xl text-[1.05rem] leading-[1.8] text-[#57524d]">
           {project.excerpt}
@@ -422,19 +403,11 @@ function ProjectHeader({ project }) {
       )}
 
       <div className="flex items-center gap-6 mt-6 pt-6 border-t border-[#cec8c0]">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-[#cec8c0] overflow-hidden shrink-0"></div>
-          <span className="font-mono text-[0.6rem] tracking-[0.08em] text-[#57524d]">
-            Faruk Kara
-          </span>
-        </div>
+        {/* AUTHOR REMOVED HERE AS REQUESTED */}
         {project.photoCount && (
-          <>
-            <span className="text-[#cec8c0]">·</span>
-            <span className="font-mono text-[0.6rem] tracking-[0.08em] text-[#9e9890]">
-              {project.photoCount} photos
-            </span>
-          </>
+          <span className="font-mono text-[0.6rem] tracking-[0.08em] text-[#9e9890]">
+            {project.photoCount} photos
+          </span>
         )}
         <div className="ml-auto">
           <button
@@ -449,59 +422,6 @@ function ProjectHeader({ project }) {
   );
 }
 
-// ─────────────────────────────────────────────
-// "YOUR VIEW"
-// ─────────────────────────────────────────────
-
-function YourView() {
-  const ref = useReveal();
-  return (
-    <section
-      ref={ref}
-      className="reveal-block mt-20 pt-10 border-t border-[#cec8c0]"
-    >
-      <h2 className="font-display font-light text-[1.5rem] tracking-[-0.01em] text-[#1c1a17] mb-1">
-        Your View
-      </h2>
-      <p className="text-[0.9rem] text-[#9e9890] mb-6">
-        Add your perspective to the narrative.
-      </p>
-      <div className="space-y-4 max-w-md">
-        <div>
-          <label className="block font-mono text-[0.58rem] tracking-[0.14em] uppercase text-[#9e9890] mb-1">
-            Name
-          </label>
-          <input
-            type="text"
-            placeholder="Your name"
-            className="w-full bg-transparent border-b border-[#cec8c0] py-2 font-[family-name:var(--font-body)] text-[0.95rem] text-[#1c1a17] placeholder:text-[#cec8c0] outline-none focus:border-[#8b6f4e] transition-colors"
-          />
-        </div>
-        <div>
-          <label className="block font-mono text-[0.58rem] tracking-[0.14em] uppercase text-[#9e9890] mb-1">
-            Questions, comments, or feedback?
-          </label>
-          <textarea
-            rows={3}
-            placeholder="Your thoughts..."
-            className="w-full bg-transparent border-b border-[#cec8c0] py-2 font-[family-name:var(--font-body)] text-[0.95rem] text-[#1c1a17] placeholder:text-[#cec8c0] outline-none focus:border-[#8b6f4e] transition-colors resize-none"
-          />
-        </div>
-        <button
-          onClick={(e) => e.preventDefault()}
-          className="font-mono text-[0.62rem] tracking-[0.13em] uppercase px-5 py-2.5 border border-[#8b6f4e] rounded-[3px] text-[#8b6f4e] hover:bg-[#8b6f4e] hover:text-[#eae6e0] transition-colors duration-200 cursor-pointer bg-transparent"
-        >
-          Submit →
-        </button>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────
-// INNER CONTENT COMPONENT (Consumes Lightbox Context)
-// ─────────────────────────────────────────────
-
 function ProjectContent({ project }) {
   const lightbox = useLightbox();
 
@@ -510,11 +430,10 @@ function ProjectContent({ project }) {
     return project.photoRows.flatMap((row) => row.images || []);
   }, [project]);
 
-  // Map to the format the lightbox expects, adding explicit keys
   const slides = useMemo(() => {
     return allImages.map((img, index) => ({
       src: img.url,
-      key: img.url + index, // Ensures the lightbox knows exactly which image is which
+      key: img.url + index,
       alt: img.alt || "",
       description:
         [img.caption, img.location].filter(Boolean).join(" — ") || undefined,
@@ -533,9 +452,7 @@ function ProjectContent({ project }) {
     <main id="main">
       <div className="pt-24 pb-32 max-w-[90vw] mx-auto">
         <ProjectHeader project={project} />
-
         {project.photoRows?.length > 0 ? (
-          // Increased the space between rows slightly to accommodate the new staggering logic (e.g. lg:mt-20)
           <div className="space-y-12 lg:space-y-20">
             {project.photoRows.map((row, i) => (
               <PhotoRow
@@ -551,7 +468,15 @@ function ProjectContent({ project }) {
             Photos coming soon.
           </p>
         )}
+      </div>
 
+      <Newsletter
+        title="Quiet dispatches"
+        italicTitle="from the field"
+        description="New work and process notes, sent sparingly. Never sold."
+      />
+
+      <div className="pt-24 pb-32 max-w-[90vw] mx-auto">
         <YourView />
       </div>
 
@@ -563,25 +488,14 @@ function ProjectContent({ project }) {
   );
 }
 
-// ─────────────────────────────────────────────
-// PAGE EXPORT (Provides Context)
-// ─────────────────────────────────────────────
-
 export default function DocumentaryProject() {
   const { project } = useData?.() ?? {};
-
-  if (!project) {
+  if (!project)
     return (
-      <main id="main" className="mx-auto max-w-4xl px-6 py-20">
-        <h1 className="font-display font-light text-[2rem] text-[#1c1a17]">
-          Project not found
-        </h1>
-        <p className="mt-2 text-[#57524d]">
-          This project may have been unpublished or the URL is incorrect.
-        </p>
+      <main className="mx-auto max-w-4xl px-6 py-20">
+        <h1>Project not found</h1>
       </main>
     );
-  }
 
   return (
     <LightboxProvider

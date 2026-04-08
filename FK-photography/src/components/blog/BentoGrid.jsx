@@ -2,7 +2,7 @@
 import React, { useMemo, useRef, useState, useEffect } from "react";
 
 const GAP = 11;
-const TARGET_ROW_HEIGHT = 300; // Adjust this to make rows taller or shorter
+const TARGET_ROW_HEIGHT = 400; // Adjust this to make rows taller or shorter
 
 export function BentoGrid({ value, onImageClick }) {
   const images = value?.images || [];
