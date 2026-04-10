@@ -20,6 +20,63 @@ export default defineType({
       type: 'imageWithMeta',
       description: 'Main image used on the hub page grid.',
     }),
+
+    // 🔥 HIGHLIGHT: Added Hub Overrides
+    defineField({
+      name: 'hubPresentation',
+      title: 'Hub Page Overrides',
+      type: 'object',
+      description: 'Override how this project appears on the main Documentary hub page.',
+      options: {collapsible: true, collapsed: false},
+      fields: [
+        defineField({
+          name: 'layout',
+          title: 'Hub Layout Style',
+          type: 'string',
+          initialValue: null, // null = auto-rotate by position
+          options: {
+            list: [
+              {
+                title: 'Auto (rotates by position — recommended)',
+                value: null,
+              },
+              {
+                title: 'Cinematic — Full width image, title overlay',
+                value: 'cinematic',
+              },
+              {
+                title: 'Editorial — Large image left, big title right',
+                value: 'editorial',
+              },
+              {
+                title: 'Sequence — Title above, image strip below',
+                value: 'sequence',
+              },
+            ],
+            layout: 'radio',
+          },
+          description:
+            'Controls how this project appears on the hub page. Leave on Auto unless you need to override the default rotation.',
+        }),
+        defineField({
+          name: 'text',
+          title: 'Excerpt',
+          type: 'text',
+          rows: 3,
+          description:
+            'Custom text just for the hub page. If left blank, standard excerpt is used.',
+        }),
+        defineField({
+          name: 'images',
+          title: 'Images',
+          type: 'array',
+          of: [{type: 'imageWithMeta'}],
+          description:
+            'Select exactly the images you want to show on the hub (up to 3 for Layout A, up to 2 for Layout B). Overwrites default cover/gallery logic.',
+        }),
+      ],
+    }),
+
     defineField({
       name: 'photoRows',
       title: 'Project Layout (Rows)',
@@ -76,14 +133,11 @@ export default defineType({
             defineField({
               name: 'pullQuote',
               type: 'object',
-              description:
-                'Text block (used for standard quotes, or the intro text block on "Feature Portrait" layout)',
               fields: [
                 {name: 'text', type: 'text', rows: 3},
                 {
                   name: 'attribution',
                   type: 'string',
-                  description: 'Used as the bold title on Feature Portrait layout',
                 },
               ],
             }),

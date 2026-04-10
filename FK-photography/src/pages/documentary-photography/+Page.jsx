@@ -1,14 +1,6 @@
 // src/pages/documentary-photography/+Page.jsx
-//
-// Documentary Hub — /documentary-photography
-// Parent page. Lists all documentary projects from Sanity.
-// Features: scrollytelling intro, featured video/embed, project cards.
-//
-// Data expected from +data.js loader:
-//   { projects, featuredVideo, introText }
-//   See SANITY SETUP NOTES at bottom of this file.
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useData } from "vike-react/useData";
 import { navigate } from "vike/client/router";
 
@@ -18,20 +10,25 @@ import { navigate } from "vike/client/router";
 
 function go(e, to) {
   if (e.defaultPrevented) return;
-  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0)
+    return;
   e.preventDefault();
   navigate(to);
 }
 
-// Scroll-reveal hook — adds 'revealed' class when element enters viewport
-function useReveal(threshold = 0.12) {
+function useReveal(threshold = 0.06) {
   const ref = useRef(null);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { el.classList.add("revealed"); obs.disconnect(); } },
-      { threshold }
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add("revealed");
+          obs.disconnect();
+        }
+      },
+      { threshold },
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -39,266 +36,79 @@ function useReveal(threshold = 0.12) {
   return ref;
 }
 
-// ─────────────────────────────────────────────
-// SCROLLYTELLING INTRO
-// Big display heading that sticks while a paragraph block scrolls.
-// On smaller screens collapses to a straight read.
-// ─────────────────────────────────────────────
-
-function ScrollyIntro({ text }) {
-  const paragraphs = text
-    ? text.split(/\n{2,}/).filter(Boolean)
-    : FALLBACK_INTRO;
-
-  const stickyRef = useRef(null);
-  const scrollRef = useRef(null);
-  const [activeIdx, setActiveIdx] = useState(0);
-
-  useEffect(() => {
-    const items = scrollRef.current?.querySelectorAll("[data-para]");
-    if (!items?.length) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) setActiveIdx(Number(e.target.dataset.para));
-        });
-      },
-      { threshold: 0.55 }
-    );
-    items.forEach((el) => obs.observe(el));
-    return () => obs.disconnect();
-  }, []);
-
-  // Visual progress indicator
-  const progressPct = paragraphs.length > 1 ? (activeIdx / (paragraphs.length - 1)) * 100 : 100;
-
-  return (
-    <section className="relative mb-24 lg:mb-32">
-      {/* ── desktop: sticky left / scroll right ── */}
-      <div className="hidden lg:flex gap-20 items-start">
-        {/* Sticky label column */}
-        <div
-          ref={stickyRef}
-          className="sticky top-28 self-start w-64 shrink-0 pt-2"
-        >
-          <span className="block font-mono text-[0.6rem] tracking-[0.2em] uppercase text-[#c8a96e] mb-4">
-            Documentary
-          </span>
-          <h1
-            className={[
-              "font-display font-light",
-              "text-[clamp(2.4rem,4vw,3.4rem)]",
-              "leading-[1.05] tracking-[-0.025em]",
-              "text-[#1c1a17]",
-              "mb-6",
-            ].join(" ")}
-          >
-            Telling
-            <br />
-            <em className="not-italic font-[350] italic" style={{ fontVariationSettings: "'wdth' 75" }}>
-              real
-            </em>
-            <br />
-            stories.
-          </h1>
-
-          {/* Progress bar */}
-          <div className="w-px h-24 bg-[#cec8c0] relative overflow-hidden">
-            <div
-              className="absolute top-0 left-0 w-full bg-[#8b6f4e] transition-all duration-500 ease-out"
-              style={{ height: `${progressPct}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Scrolling paragraphs */}
-        <div ref={scrollRef} className="flex-1 pt-2 space-y-20">
-          {paragraphs.map((p, i) => (
-            <p
-              key={i}
-              data-para={i}
-              className={[
-                "text-[1.15rem] leading-[1.85] transition-all duration-500",
-                i === activeIdx
-                  ? "text-[#1c1a17] opacity-100"
-                  : "text-[#9e9890] opacity-60",
-              ].join(" ")}
-            >
-              {p}
-            </p>
-          ))}
-        </div>
-      </div>
-
-      {/* ── mobile: straight read ── */}
-      <div className="lg:hidden">
-        <span className="block font-mono text-[0.6rem] tracking-[0.2em] uppercase text-[#c8a96e] mb-3">
-          Documentary
-        </span>
-        <h1
-          className={[
-            "font-display font-light",
-            "text-[clamp(2rem,8vw,3rem)]",
-            "leading-[1.05] tracking-[-0.025em]",
-            "text-[#1c1a17] mb-8",
-          ].join(" ")}
-        >
-          Telling{" "}
-          <em className="not-italic font-[350] italic" style={{ fontVariationSettings: "'wdth' 75" }}>
-            real
-          </em>{" "}
-          stories.
-        </h1>
-        <div className="space-y-5">
-          {paragraphs.map((p, i) => (
-            <p key={i} className="text-[1.05rem] leading-[1.8] text-[#57524d]">
-              {p}
-            </p>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+const ROTATION = ["cinematic", "editorial", "sequence"];
+function defaultLayout(index) {
+  return ROTATION[index % ROTATION.length];
 }
 
-const FALLBACK_INTRO = [
-  "I am a Cambridge-based photographer driven by the raw, unscripted narratives of documentary and photojournalism. To me, photography is an act of observation — a study of how people connect with their environment, whether in the historic streets of a university city or the quiet corners of a local festival.",
-  "My documentary work is about community. I believe that a photograph should do more than show a subject; it should document a relationship. By focusing on the environmental context of every individual, I aim to create a visual record that feels both personal and universal.",
-  "I enjoy straight photojournalism, recording the unique duality of Cambridge in both 'town and gown.' This involves a commitment to capturing the authentic, fleeting moments that define our shared spaces — documenting the interplay between tradition and the everyday.",
-];
+function getHubImages(project, max = 3) {
+  const overrides = project.hubPresentation?.overrideImages ?? [];
+  if (overrides.length > 0) return overrides.slice(0, max);
+
+  const images = [];
+  if (project.coverImage?.url) images.push(project.coverImage);
+  (project.galleryImages ?? []).forEach((img) => {
+    if (images.length < max) images.push(img);
+  });
+  return images;
+}
 
 // ─────────────────────────────────────────────
-// FEATURED VIDEO EMBED
-// If the Sanity 'featuredVideo' field is set, this renders at top of page.
-// Supports YouTube and Vimeo embed URLs.
+// LAYOUT 1: CINEMATIC
+// 100% Native height. Wrapper shrink-wraps the image perfectly.
 // ─────────────────────────────────────────────
 
-function FeaturedVideo({ video }) {
+function LayoutCinematic({ project }) {
   const ref = useReveal();
-  if (!video?.embedUrl) return null;
-
-  return (
-    <section ref={ref} className="reveal-block mb-20 lg:mb-28">
-      <div className="flex items-baseline justify-between mb-4">
-        <span className="font-mono text-[0.6rem] tracking-[0.2em] uppercase text-[#c8a96e]">
-          Featured story
-        </span>
-        {video.label && (
-          <span className="font-mono text-[0.6rem] tracking-[0.08em] uppercase text-[#9e9890]">
-            {video.label}
-          </span>
-        )}
-      </div>
-      <div className="relative rounded-[1rem] overflow-hidden bg-[#1c1a17]" style={{ paddingBottom: "56.25%" }}>
-        <iframe
-          src={video.embedUrl}
-          title={video.label || "Featured documentary"}
-          allow="autoplay; fullscreen; picture-in-picture"
-          allowFullScreen
-          className="absolute inset-0 w-full h-full border-0"
-        />
-      </div>
-      {video.caption && (
-        <p className="mt-3 font-mono text-[0.6rem] tracking-[0.1em] text-[#9e9890]">
-          {video.caption}
-        </p>
-      )}
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────
-// PROJECT CARD
-// Each card links to /documentary-photography/[slug]
-// Image at top (natural ratio), title + excerpt below, thin rule + CTA.
-// Matches BlogCard design language — no borders, no shadows.
-// ─────────────────────────────────────────────
-
-function ProjectCard({ project, index }) {
-  const ref = useReveal(0.08);
   const href = `/documentary-photography/${project.slug}`;
+  const images = getHubImages(project, 1);
+  const img = images[0];
+  const text = project.hubPresentation?.overrideText || project.excerpt;
 
   return (
-    <article
-      ref={ref}
-      className="reveal-block"
-      style={{ transitionDelay: `${(index % 2) * 80}ms` }}
-    >
+    <article ref={ref} className="reveal-block w-full mb-2">
       <a
         href={href}
         onClick={(e) => go(e, href)}
-        className="group block no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8b6f4e] rounded-[1rem]"
-        aria-label={`View project: ${project.title}`}
+        className="block relative w-full no-underline group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8b6f4e]"
       >
-        {/* Image */}
-        {project.coverImage && (
-          <div className="rounded-[1rem] overflow-hidden mb-4">
+        <div className="relative w-full overflow-hidden rounded-[1rem]">
+          {img?.url ? (
             <img
-              src={project.coverImage.url}
-              alt={project.coverImage.alt || project.title}
-              className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.025]"
+              src={img.url}
+              alt={img.alt || project.title || ""}
+              className="w-full h-auto block transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.01]"
               loading="lazy"
             />
+          ) : (
+            <div className="w-full aspect-[16/9] bg-[#2a2520]" />
+          )}
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+
+          <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-10">
+            <div className="flex items-end justify-between gap-8">
+              <div className="max-w-2xl">
+                {project.year && (
+                  <span className="block font-mono text-[0.58rem] tracking-[0.2em] uppercase text-[rgba(255,255,255,0.6)] mb-2">
+                    {project.year}
+                    {project.location ? ` · ${project.location}` : ""}
+                  </span>
+                )}
+                <h2 className="font-display font-light text-[clamp(1.8rem,4vw,3.2rem)] leading-[1.0] tracking-[-0.02em] text-white mb-3">
+                  {project.title}
+                </h2>
+                {text && (
+                  <p className="text-[0.9rem] leading-[1.5] text-[rgba(255,255,255,0.7)] max-w-lg line-clamp-2">
+                    {text}
+                  </p>
+                )}
+              </div>
+              <span className="font-mono text-[0.6rem] tracking-[0.14em] uppercase text-[rgba(255,255,255,0.5)] group-hover:text-white transition-colors whitespace-nowrap hidden md:block">
+                View project →
+              </span>
+            </div>
           </div>
-        )}
-        {/* Fallback placeholder when no image */}
-        {!project.coverImage && (
-          <div className="rounded-[1rem] overflow-hidden mb-4 bg-[#d8d4ce] aspect-[3/2]" />
-        )}
-
-        {/* Meta row */}
-        <div className="flex items-center gap-3 mb-2">
-          <span className="font-mono text-[0.58rem] tracking-[0.18em] uppercase text-[#c8a96e]">
-            Documentary
-          </span>
-          {project.year && (
-            <>
-              <span className="text-[#cec8c0]">·</span>
-              <span className="font-mono text-[0.58rem] tracking-[0.08em] text-[#9e9890]">
-                {project.year}
-              </span>
-            </>
-          )}
-          {project.photoCount && (
-            <>
-              <span className="text-[#cec8c0]">·</span>
-              <span className="font-mono text-[0.58rem] tracking-[0.08em] text-[#9e9890]">
-                {project.photoCount} photos
-              </span>
-            </>
-          )}
-        </div>
-
-        {/* Title */}
-        <h2
-          className={[
-            "font-display font-light",
-            "text-[clamp(1.4rem,2.5vw,1.9rem)]",
-            "leading-[1.1] tracking-[-0.02em]",
-            "text-[#1c1a17] mb-2",
-            "group-hover:text-[#8b6f4e] transition-colors duration-300",
-          ].join(" ")}
-        >
-          {project.title}
-        </h2>
-
-        {/* Excerpt */}
-        {project.excerpt && (
-          <p className="text-[0.95rem] leading-[1.65] text-[#57524d] mb-4 line-clamp-3">
-            {project.excerpt}
-          </p>
-        )}
-
-        {/* Footer rule + CTA */}
-        <div className="flex items-center justify-between pt-4 border-t border-[#cec8c0]">
-          <span className="font-mono text-[0.62rem] tracking-[0.13em] uppercase text-[#9e9890] group-hover:text-[#8b6f4e] transition-colors">
-            View project →
-          </span>
-          {project.location && (
-            <span className="font-mono text-[0.58rem] tracking-[0.06em] text-[#9e9890]">
-              {project.location}
-            </span>
-          )}
         </div>
       </a>
     </article>
@@ -306,105 +116,290 @@ function ProjectCard({ project, index }) {
 }
 
 // ─────────────────────────────────────────────
-// PROJECTS GRID
-// Two-column staggered layout matching BlogIndex.jsx
+// LAYOUT 2: EDITORIAL SPLIT
+// Uses native height (h-auto). Wrapper shrink-wraps perfectly.
 // ─────────────────────────────────────────────
 
-function ProjectsGrid({ projects = [] }) {
-  if (!projects.length) {
-    return (
-      <p className="font-mono text-[0.7rem] tracking-[0.1em] uppercase text-[#9e9890]">
-        No projects yet.
-      </p>
-    );
-  }
-
-  const left  = projects.filter((_, i) => i % 2 === 0);
-  const right = projects.filter((_, i) => i % 2 !== 0);
+function LayoutEditorial({ project }) {
+  const ref = useReveal();
+  const href = `/documentary-photography/${project.slug}`;
+  const images = getHubImages(project, 1);
+  const img = images[0];
+  const text = project.hubPresentation?.overrideText || project.excerpt;
 
   return (
-    <section>
-      <div className="flex items-baseline justify-between mb-12">
-        <h2 className="font-display font-light text-[1.15rem] tracking-[-0.01em] text-[#1c1a17]">
-          Projects
-        </h2>
-        <span className="font-mono text-[0.6rem] tracking-[0.1em] uppercase text-[#9e9890]">
-          {projects.length} {projects.length === 1 ? "series" : "series"}
-        </span>
-      </div>
+    <article
+      ref={ref}
+      className="reveal-block w-full mb-2 grid grid-cols-1 lg:grid-cols-[58fr_42fr] gap-0 items-start"
+    >
+      <a
+        href={href}
+        onClick={(e) => go(e, href)}
+        className="block group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8b6f4e]"
+      >
+        <div className="overflow-hidden rounded-[1rem] w-full relative">
+          {img?.url ? (
+            <img
+              src={img.url}
+              alt={img.alt || project.title || ""}
+              className="w-full h-auto block transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.025]"
+              loading="lazy"
+            />
+          ) : (
+            <div className="w-full aspect-[4/3] bg-[#d8d4ce]" />
+          )}
+        </div>
+      </a>
 
-      <div className="flex gap-8 lg:gap-12 items-start">
-        {/* Left column */}
-        <div className="flex-1 flex flex-col gap-16">
-          {left.map((p, i) => (
-            <ProjectCard key={p._id || p.slug} project={p} index={i * 2} />
-          ))}
+      <a
+        href={href}
+        onClick={(e) => go(e, href)}
+        className="group flex flex-col no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8b6f4e] pl-0 lg:pl-12 pt-8 lg:pt-4"
+      >
+        {project.year && (
+          <span className="block font-mono text-[0.58rem] tracking-[0.2em] uppercase text-[#9e9890] mb-6">
+            {project.year}
+            {project.location ? ` · ${project.location}` : ""}
+          </span>
+        )}
+        <h2 className="font-display font-light text-[clamp(2.5rem,5vw,4.5rem)] leading-[0.95] tracking-[-0.025em] text-[#1c1a17] group-hover:text-[#8b6f4e] transition-colors duration-300 mb-8">
+          {project.title}
+        </h2>
+        {text && (
+          <p className="text-[0.95rem] leading-[1.7] text-[#57524d] max-w-sm mb-8">
+            {text}
+          </p>
+        )}
+        <span className="font-mono text-[0.6rem] tracking-[0.14em] uppercase text-[#9e9890] group-hover:text-[#8b6f4e] transition-colors">
+          View project →
+        </span>
+      </a>
+    </article>
+  );
+}
+
+// ─────────────────────────────────────────────
+// LAYOUT 3: SEQUENCE
+// Flex logic removed fixed heights completely.
+// Uses flex ratio + native height (h-auto) to scale without ANY clipping.
+// ─────────────────────────────────────────────
+
+function LayoutSequence({ project }) {
+  const ref = useReveal();
+  const href = `/documentary-photography/${project.slug}`;
+  const images = getHubImages(project, 3);
+  const text = project.hubPresentation?.overrideText || project.excerpt;
+
+  return (
+    <article ref={ref} className="reveal-block w-full mb-2">
+      <a
+        href={href}
+        onClick={(e) => go(e, href)}
+        className="group flex items-start justify-between gap-8 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8b6f4e] mb-8"
+      >
+        <div className="max-w-2xl">
+          {project.year && (
+            <span className="block font-mono text-[0.58rem] tracking-[0.2em] uppercase text-[#9e9890] mb-4">
+              {project.year}
+              {project.location ? ` · ${project.location}` : ""}
+            </span>
+          )}
+          <h2 className="font-display font-light text-[clamp(1.8rem,3.5vw,3rem)] leading-[1.05] tracking-[-0.02em] text-[#1c1a17] group-hover:text-[#8b6f4e] transition-colors duration-300 mb-4">
+            {project.title}
+          </h2>
+          {text && (
+            <p className="text-[0.95rem] leading-[1.7] text-[#57524d]">
+              {text}
+            </p>
+          )}
         </div>
-        {/* Right column — staggered with mt-32 */}
-        <div className="flex-1 flex flex-col gap-16 mt-32">
-          {right.map((p, i) => (
-            <ProjectCard key={p._id || p.slug} project={p} index={i * 2 + 1} />
-          ))}
-        </div>
+        <span className="font-mono text-[0.6rem] tracking-[0.14em] uppercase text-[#9e9890] group-hover:text-[#8b6f4e] transition-colors whitespace-nowrap pt-2 hidden md:block">
+          View project →
+        </span>
+      </a>
+
+      {images.length > 0 && (
+        <a
+          href={href}
+          onClick={(e) => go(e, href)}
+          className="block group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8b6f4e]"
+        >
+          {/* 
+            NO FIXED HEIGHT HERE! By just using aspect ratio for flex-grow, 
+            the math inherently guarantees every item will match identical height automatically 
+            while avoiding ANY object-cover/cropping inside the boxes.
+          */}
+          <div className="flex gap-3 w-full items-start">
+            {images.map((img, i) => {
+              const ratio =
+                img?.dimensions?.width && img?.dimensions?.height
+                  ? img.dimensions.width / img.dimensions.height
+                  : 1;
+
+              return (
+                <div
+                  key={img?._key || i}
+                  className="overflow-hidden rounded-[1rem] relative"
+                  style={{ flex: `${ratio} 1 0%` }}
+                >
+                  {img?.url ? (
+                    <img
+                      src={img.url}
+                      alt={img?.alt || ""}
+                      className="w-full h-auto block transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.025]"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-full aspect-[4/3] bg-[#d8d4ce]" />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </a>
+      )}
+    </article>
+  );
+}
+
+// ─────────────────────────────────────────────
+// SPACER between projects
+// ─────────────────────────────────────────────
+
+function ProjectDivider() {
+  return (
+    <div className="py-16 lg:py-24">
+      <div className="w-12 h-px bg-[#cec8c0]" />
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// FEATURED VIDEOS
+// ─────────────────────────────────────────────
+
+function FeaturedVideosGrid({ videos }) {
+  const ref = useReveal();
+  if (!videos?.length) return null;
+  return (
+    <section
+      ref={ref}
+      className="reveal-block mt-24 lg:mt-32 pt-16 border-t border-[#cec8c0]"
+    >
+      <h2 className="font-display font-light text-[clamp(1.8rem,3.5vw,3rem)] leading-[1.1] tracking-[-0.02em] text-[#1c1a17] mb-12">
+        Featured Stories
+      </h2>
+      <div
+        className={`grid grid-cols-1 ${videos.length > 1 ? "lg:grid-cols-2" : ""} gap-12`}
+      >
+        {videos.map((video, idx) => (
+          <div key={idx} className="flex flex-col w-full">
+            <div className="flex items-baseline justify-between mb-4">
+              <span className="font-mono text-[0.6rem] tracking-[0.2em] uppercase text-[#c8a96e]">
+                Video
+              </span>
+              {video.label && (
+                <span className="font-mono text-[0.6rem] tracking-[0.08em] uppercase text-[#9e9890]">
+                  {video.label}
+                </span>
+              )}
+            </div>
+            <div
+              className="relative rounded-[1rem] overflow-hidden bg-[#1c1a17]"
+              style={{ paddingBottom: "56.25%" }}
+            >
+              <iframe
+                src={video.embedUrl}
+                title={video.label || "Featured documentary"}
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full border-0"
+              />
+            </div>
+            {video.caption && (
+              <p className="mt-4 text-[0.9rem] leading-[1.65] text-[#57524d]">
+                {video.caption}
+              </p>
+            )}
+          </div>
+        ))}
       </div>
     </section>
   );
 }
 
 // ─────────────────────────────────────────────
-// DIVIDER QUOTE
-// Editorial pull-quote between intro and projects.
+// FALLBACK INTRO
 // ─────────────────────────────────────────────
 
-function DividerQuote() {
-  const ref = useReveal();
-  return (
-    <div ref={ref} className="reveal-block my-20 lg:my-28 text-center max-w-2xl mx-auto px-4">
-      <p
-        className={[
-          "font-display font-light italic",
-          "text-[clamp(1.1rem,2.5vw,1.5rem)]",
-          "leading-[1.55] tracking-[-0.01em]",
-          "text-[#57524d]",
-        ].join(" ")}
-        style={{ fontVariationSettings: "'wdth' 90" }}
-      >
-        "A photograph should do more than show a subject; it should document a relationship."
-      </p>
-    </div>
-  );
-}
+const FALLBACK_INTRO = [
+  "I am a Cambridge-based photographer driven by the raw, unscripted narratives of documentary and photojournalism. To me, photography is an act of observation: a study of how people connect with their environment, whether in the historic streets of a university city or the quiet corners of a local festival.",
+  "My documentary work is about community. I believe that a photograph should do more than show a subject; it should document a relationship. By focusing on the environmental context of every individual, I aim to create a visual record that feels both personal and universal.",
+];
 
 // ─────────────────────────────────────────────
 // PAGE
 // ─────────────────────────────────────────────
 
 export default function DocumentaryHub() {
-  const { projects = [], featuredVideo, introText } = useData?.() ?? {};
+  const {
+    projects = [],
+    featuredVideos = [],
+    introText = [],
+  } = useData?.() ?? {};
+  const textChunks = introText.length > 0 ? introText : FALLBACK_INTRO;
 
   return (
     <main id="main">
-      <div
-        className={[
-          "mx-auto w-7xl max-w-full mx-auto",
-          "px-[1.4rem] lg:px-12",
-          "pt-24 pb-32",
-        ].join(" ")}
-      >
-        {/* Scrollytelling intro */}
-        <ScrollyIntro text={introText} />
+      <div className="mx-auto max-w-7xl px-6 lg:px-12 pt-24 pb-32">
+        <header className="mb-16">
+          <span className="block font-mono text-[0.62rem] tracking-[0.2em] uppercase text-[#8b6f4e] mb-4">
+            Work
+          </span>
+          <h1 className="font-display font-light text-[clamp(3rem,7vw,6rem)] leading-[0.95] tracking-[-0.025em] text-[#1c1a17]">
+            Documentary
+          </h1>
+        </header>
 
-        {/* Featured video — renders only if Sanity field set */}
-        <FeaturedVideo video={featuredVideo} />
+        {textChunks[0] && (
+          <div className="mb-20 max-w-2xl">
+            <p className="text-[1.05rem] leading-[1.85] text-[#57524d]">
+              {textChunks[0]}
+            </p>
+          </div>
+        )}
 
-        {/* Pull quote */}
-        <DividerQuote />
+        <div>
+          {projects.map((proj, i) => {
+            const layoutType = proj.hubPresentation?.layout || defaultLayout(i);
 
-        {/* Projects grid */}
-        <ProjectsGrid projects={projects} />
+            return (
+              <React.Fragment key={proj._id}>
+                {layoutType === "cinematic" && (
+                  <LayoutCinematic project={proj} />
+                )}
+                {layoutType === "editorial" && (
+                  <LayoutEditorial project={proj} />
+                )}
+                {layoutType === "sequence" && <LayoutSequence project={proj} />}
+
+                {i < projects.length - 1 && <ProjectDivider />}
+
+                {textChunks[i + 1] && (
+                  <div className="max-w-2xl py-16 lg:py-24">
+                    <p className="text-[1.05rem] leading-[1.85] text-[#57524d]">
+                      {textChunks[i + 1]}
+                    </p>
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+
+        <FeaturedVideosGrid videos={featuredVideos} />
       </div>
 
-      {/* Reveal animation styles */}
       <style>{`
         .reveal-block {
           opacity: 0;
@@ -419,135 +414,3 @@ export default function DocumentaryHub() {
     </main>
   );
 }
-
-/*
-──────────────────────────────────────────────────────────────────
-SANITY SCHEMA — documentaryProject
-──────────────────────────────────────────────────────────────────
-
-Create this schema at: /sanity/schemas/documentaryProject.js
-
-export default {
-  name: 'documentaryProject',
-  title: 'Documentary Project',
-  type: 'document',
-  fields: [
-    { name: 'title',     type: 'string',   title: 'Title' },
-    { name: 'slug',      type: 'slug',     title: 'Slug', options: { source: 'title' } },
-    { name: 'year',      type: 'string',   title: 'Year (e.g. 2023)' },
-    { name: 'location',  type: 'string',   title: 'Location (e.g. Cambridge, UK)' },
-    { name: 'excerpt',   type: 'text',     title: 'Short excerpt (2–3 sentences)' },
-    { name: 'introText', type: 'array',    title: 'Hub intro text (overrides page default)',
-      of: [{ type: 'block' }] },
-    {
-      name: 'coverImage', type: 'image', title: 'Cover image',
-      fields: [{ name: 'alt', type: 'string', title: 'Alt text' }]
-    },
-    {
-      name: 'photoRows', type: 'array', title: 'Photo rows',
-      of: [
-        {
-          type: 'object', name: 'photoRow', title: 'Row',
-          fields: [
-            {
-              name: 'layout', type: 'string', title: 'Layout',
-              options: {
-                list: [
-                  { value: 'solo',           title: 'Solo — one full-width' },
-                  { value: 'dominant',       title: 'Dominant — large left + small right stack' },
-                  { value: 'trio',           title: 'Trio — three equal' },
-                  { value: 'offset',         title: 'Offset — small left + large right' },
-                  { value: 'strip',          title: 'Strip — 4–5 landscape crops in a row' },
-                  { value: 'spread',         title: 'Spread — wide panoramic' },
-                  { value: 'featurePortrait','title': 'Feature portrait — big portrait + text' },
-                ]
-              }
-            },
-            {
-              name: 'images', type: 'array', title: 'Images',
-              of: [{
-                type: 'image',
-                fields: [
-                  { name: 'alt',      type: 'string', title: 'Alt text' },
-                  { name: 'caption',  type: 'string', title: 'Caption' },
-                  { name: 'location', type: 'string', title: 'Location label' },
-                ]
-              }]
-            },
-            {
-              name: 'pullQuote', type: 'object', title: 'Pull quote (optional)',
-              fields: [
-                { name: 'text',       type: 'string', title: 'Quote text' },
-                { name: 'attribution',type: 'string', title: 'Attribution' },
-              ]
-            }
-          ],
-          preview: {
-            select: { layout: 'layout' },
-            prepare({ layout }) { return { title: `Row: ${layout ?? 'unset'}` } }
-          }
-        }
-      ]
-    },
-    { name: 'photoCount', type: 'number', title: 'Photo count (for display)' },
-    { name: 'order',      type: 'number', title: 'Sort order (lower = first)' },
-  ],
-  orderings: [{ title: 'Sort order', name: 'orderAsc', by: [{ field: 'order', direction: 'asc' }] }],
-}
-
-──────────────────────────────────────────────────────────────────
-SANITY SCHEMA — documentaryHubSettings (singleton)
-Use this to store the hub intro text and featured video centrally.
-──────────────────────────────────────────────────────────────────
-
-export default {
-  name: 'documentaryHubSettings',
-  title: 'Documentary Hub Settings',
-  type: 'document',
-  __experimental_actions: ['update', 'publish'],  // singleton — no create/delete
-  fields: [
-    { name: 'introText',    type: 'text',   title: 'Intro text (plain, 2–4 paragraphs, line-break = new paragraph)' },
-    {
-      name: 'featuredVideo', type: 'object', title: 'Featured video',
-      fields: [
-        { name: 'embedUrl', type: 'url',    title: 'Embed URL (YouTube /embed/ or Vimeo player URL)' },
-        { name: 'label',    type: 'string', title: 'Label (e.g. "Strawberry Fair 2023")' },
-        { name: 'caption',  type: 'string', title: 'Caption below embed' },
-      ]
-    },
-  ]
-}
-
-──────────────────────────────────────────────────────────────────
-DATA LOADER — src/pages/documentary-photography/+data.js
-──────────────────────────────────────────────────────────────────
-
-import { sanityClient } from '@/lib/sanityClient.js'
-
-const HUB_QUERY = `{
-  "settings": *[_type == "documentaryHubSettings"][0]{
-    introText,
-    featuredVideo
-  },
-  "projects": *[_type == "documentaryProject"] | order(order asc) {
-    _id,
-    title,
-    "slug": slug.current,
-    year,
-    location,
-    excerpt,
-    photoCount,
-    "coverImage": coverImage{ "url": asset->url, alt }
-  }
-}`
-
-export async function data() {
-  const result = await sanityClient.fetch(HUB_QUERY)
-  return {
-    introText:    result.settings?.introText  ?? null,
-    featuredVideo: result.settings?.featuredVideo ?? null,
-    projects:     result.projects ?? [],
-  }
-}
-──────────────────────────────────────────────────────────────────
-*/
