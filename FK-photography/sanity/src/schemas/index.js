@@ -5,6 +5,7 @@ import page from './documents/page'
 import story from './documents/story'
 import gallery from './documents/gallery'
 import post from './documents/post'
+import news from './documents/news'
 import documentaryProject from './documents/documentaryProject'
 import documentaryHubSettings from './documents/documentaryHubSettings'
 import imageAsset from './documents/imageAsset'
@@ -20,6 +21,7 @@ export const schemaTypes = [
   navigationItem,
   homepage,
   page,
+  news,
   story,
   gallery,
   post,

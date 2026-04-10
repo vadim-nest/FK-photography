@@ -1,11 +1,20 @@
-// src/pages/blog/+data.js (server-only)
-import { POSTS_PAGE, fetchPostsPage } from "@/lib/sanity/queries";
+// src/pages/blog/+data.js
+import { sanity } from "@/lib/sanity/client";
+
+const JOURNAL_QUERY = `
+  *[_type in["post", "news", "documentaryProject"]] | order(coalesce(publishedAt, _createdAt) desc)[0...30] {
+    _id,
+    _type,
+    title,
+    "publishedAt": coalesce(publishedAt, _createdAt),
+    excerpt, 
+    "slug": slug.current,
+    "image": coalesce(heroImage, coverImage, image),
+    externalLink
+  }
+`;
 
 export async function data() {
-  const offset = 0;
-  const limit = 12;
-  // Either use the GROQ with params or the helper; keeping both as examples.
-  // const posts = await sanity.fetch(POSTS_PAGE, { offset, to: offset + limit });
-  const posts = await fetchPostsPage(offset, limit);
-  return { posts };
+  const entries = await sanity.fetch(JOURNAL_QUERY);
+  return { entries };
 }

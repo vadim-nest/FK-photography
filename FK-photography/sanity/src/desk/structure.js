@@ -27,6 +27,7 @@ export const deskStructure = (S) =>
       S.documentTypeListItem('navigationItem'),
       S.divider(),
       S.documentTypeListItem('page'),
+      S.documentTypeListItem('news'),
       S.documentTypeListItem('story'),
       S.documentTypeListItem('gallery'),
       S.documentTypeListItem('post'),

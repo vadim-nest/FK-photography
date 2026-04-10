@@ -2,119 +2,184 @@
 import React from "react";
 import { SmartImage } from "@/components/media/SmartImage.jsx";
 import { navigate } from "vike/client/router";
+import { PortableText } from "@portabletext/react";
 
-// Category colour map — extend as needed
 const CAT_COLOURS = {
-  blog:  { text: "text-[#7a5838]", border: "border-[rgba(122,88,56,0.35)]",  bg: "bg-[rgba(122,88,56,0.06)]"  },
-  news:  { text: "text-[#2a6a50]", border: "border-[rgba(42,106,80,0.35)]",  bg: "bg-[rgba(42,106,80,0.06)]"  },
-  essay: { text: "text-[#5848a0]", border: "border-[rgba(88,72,160,0.35)]",  bg: "bg-[rgba(88,72,160,0.06)]"  },
+  blog: {
+    text: "text-[#7a5838]",
+    border: "border-[rgba(122,88,56,0.35)]",
+    bg: "bg-[rgba(122,88,56,0.06)]",
+  },
+  news: {
+    text: "text-[#2a6a50]",
+    border: "border-[rgba(42,106,80,0.35)]",
+    bg: "bg-[rgba(42,106,80,0.06)]",
+  },
+  essay: {
+    text: "text-[#5848a0]",
+    border: "border-[rgba(88,72,160,0.35)]",
+    bg: "bg-[rgba(88,72,160,0.06)]",
+  },
+};
+
+const excerptComponents = {
+  marks: {
+    link: ({ children, value }) => (
+      <a
+        href={value.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline decoration-[#cec8c0] underline-offset-4 hover:text-[#8b6f4e] hover:decoration-[#8b6f4e] transition-colors"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </a>
+    ),
+  },
+  block: {
+    normal: ({ children }) => <>{children}</>,
+  },
 };
 
 function CategoryPill({ category }) {
   if (!category) return null;
-  const key = category.toLowerCase();
+  // Map internal labels to the exact dictionary keys above
+  const key =
+    category.toLowerCase() === "documentaryproject"
+      ? "essay"
+      : category.toLowerCase();
+
   const colours = CAT_COLOURS[key] ?? {
     text: "text-[#57524d]",
     border: "border-[rgba(87,82,77,0.3)]",
     bg: "bg-[rgba(87,82,77,0.05)]",
   };
+
+  const displayLabel = key === "essay" ? "Essay" : category;
+
   return (
     <span
       className={[
         "inline-block font-mono text-[0.6rem] tracking-[0.16em] uppercase",
         "px-[0.55rem] py-[0.22rem] border rounded-[2px]",
-        colours.text, colours.border, colours.bg,
+        colours.text,
+        colours.border,
+        colours.bg,
       ].join(" ")}
     >
-      {category}
+      {displayLabel}
     </span>
   );
 }
 
 export function BlogCard({ post }) {
+  const type = post?._type;
   const slug = post?.slug || "";
-  const href = `/blog/${slug}`;
 
-  const go = React.useCallback((e, to) => {
-    if (e.defaultPrevented) return;
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-    e.preventDefault();
-    navigate(to);
-  }, []);
+  // 1. Determine destination and behavior
+  let href = `/blog/${slug}`;
+  let isExternal = false;
+  let categoryLabel = "Blog";
 
-  const excerptId = React.useId();
-  const category = post?.category ?? post?.categories?.[0]?.title ?? null;
+  if (type === "news") {
+    href = post.externalLink || "";
+    isExternal = !!post.externalLink;
+    categoryLabel = "News";
+  } else if (type === "documentaryProject") {
+    // <--- Updated here
+    href = `/documentary-photography/${slug}`;
+    categoryLabel = "Essay";
+  }
 
-  // Format date
+  const go = React.useCallback(
+    (e, to) => {
+      if (isExternal || !to) return;
+      if (e.defaultPrevented) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0)
+        return;
+      e.preventDefault();
+      navigate(to);
+    },
+    [isExternal],
+  );
+
+  const rawImage = post?.image || post?.heroImage || post?.coverImage;
+  const displayImage = rawImage?.asset ? rawImage : null;
+
   const dateStr = post?.publishedAt
     ? new Date(post.publishedAt).toLocaleDateString("en-GB", {
-        day: "numeric", month: "short", year: "numeric",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
       })
     : null;
 
   const readTime = post?.readTime ? `${post.readTime} min` : null;
-  const commentCount = post?.commentCount ?? null;
 
   return (
-    <article className="group flex flex-col cursor-pointer">
+    <article className="group flex flex-col cursor-pointer w-full">
       <a
-        href={href}
+        href={href || undefined}
         onClick={(e) => go(e, href)}
-        aria-describedby={post?.excerpt ? excerptId : undefined}
-        className="flex flex-col gap-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8b6f4e] focus-visible:ring-offset-2 rounded-[1rem]"
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
+        className={`flex flex-col gap-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8b6f4e] rounded-[1rem] ${!href ? "cursor-default" : ""}`}
       >
-        {/* ── Label row: category + date — sits ABOVE the image ── */}
         <div className="flex items-center justify-between mb-[0.6rem]">
-          <CategoryPill category={category} />
-          {(dateStr || readTime) && (
-            <span className="font-mono text-[0.6rem] tracking-[0.08em] text-[#9e9890]">
-              {[dateStr, readTime].filter(Boolean).join(" · ")}
-            </span>
-          )}
+          <CategoryPill category={categoryLabel} />
+          <span className="font-mono text-[0.6rem] tracking-[0.08em] text-[#9e9890]">
+            {[dateStr, readTime].filter(Boolean).join(" · ")}
+          </span>
         </div>
 
-        {/* ── Image — rounded corners, never cropped by object-fit cover ──
-            SmartImage renders at its natural aspect ratio.
-            The overflow-hidden + rounded-[1rem] clips the corners only.       */}
-        {post?.heroImage && (
-          <div className="w-full overflow-hidden rounded-[1rem]">
+        {displayImage ? (
+          <div className="w-full overflow-hidden rounded-[1rem] bg-[rgba(0,0,0,0.03)]">
             <SmartImage
-              image={post.heroImage}
-              alt={post?.heroImage?.alt || post?.title || ""}
+              image={displayImage}
+              alt={displayImage?.alt || post?.title || ""}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
-              // No fixed height, no object-cover — image shows at natural ratio
-              className="w-full h-auto transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.03]"
+              className="w-full h-auto block transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.03]"
             />
+          </div>
+        ) : (
+          <div className="w-full aspect-[4/3] bg-[#cec8c0] rounded-[1rem] flex items-center justify-center p-6">
+            <span className="font-mono text-[0.6rem] tracking-[0.1em] uppercase text-white/50 text-center">
+              {post?.title || "No Image"}
+            </span>
           </div>
         )}
 
-        {/* ── Body ── */}
         <div className="pt-[0.95rem] flex flex-col gap-0">
-          <h2 className="font-display font-light text-[1.15rem] leading-[1.22] tracking-[-0.01em] text-[#1c1a17] mb-[0.55rem]">
+          <h2 className="font-display font-light text-[1.2rem] leading-[1.22] tracking-[-0.01em] text-[#1c1a17] mb-[0.55rem] group-hover:text-[#8b6f4e] transition-colors">
             {post?.title || "Untitled"}
           </h2>
 
           {post?.excerpt && (
-            <p
-              id={excerptId}
-              className="text-[0.94rem] leading-[1.65] text-[#57524d] mb-[0.8rem] line-clamp-3"
-            >
-              {post.excerpt}
-            </p>
+            <div className="text-[0.94rem] leading-[1.65] text-[#57524d] mb-[0.8rem]">
+              {Array.isArray(post.excerpt) ? (
+                <PortableText
+                  value={post.excerpt}
+                  components={excerptComponents}
+                />
+              ) : (
+                <p>{post.excerpt}</p>
+              )}
+            </div>
           )}
 
-          {/* Footer row */}
           <div className="flex items-center justify-between pt-[0.7rem] border-t border-[#cec8c0]">
-            {commentCount !== null ? (
-              <span className="font-mono text-[0.58rem] tracking-[0.08em] text-[#9e9890]">
-                {commentCount} {commentCount === 1 ? "comment" : "comments"}
-              </span>
-            ) : (
-              <span />
-            )}
-            <span className="font-mono text-[0.62rem] tracking-[0.12em] uppercase text-[#57524d] transition-colors duration-200 group-hover:text-[#8b6f4e]">
-              Read →
+            <span className="font-mono text-[0.58rem] tracking-[0.08em] text-[#9e9890]">
+              {type === "news"
+                ? "News Update"
+                : post.commentCount
+                  ? `${post.commentCount} comments`
+                  : "Journal Entry"}
             </span>
+            {href && (
+              <span className="font-mono text-[0.62rem] tracking-[0.12em] uppercase text-[#57524d] group-hover:text-[#8b6f4e] transition-colors">
+                {isExternal ? "Visit Site →" : "Read →"}
+              </span>
+            )}
           </div>
         </div>
       </a>

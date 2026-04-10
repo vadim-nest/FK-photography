@@ -1,71 +1,127 @@
-import React from "react";
+// src/pages/blog/+Page.jsx
+import React, { useState } from "react";
 import { useData } from "vike-react/useData";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { Newsletter } from "@/components/ui/Newsletter.jsx";
 
-export default function BlogIndex() {
-  const { posts = [] } = useData();
+export default function JournalIndex() {
+  const { entries = [] } = useData();
+  const [filter, setFilter] = useState("all");
 
-  if (!posts.length)
-    return (
-      <p className="font-mono text-[0.65rem] tracking-[0.14em] uppercase text-[#9e9890] py-20 text-center">
-        No posts yet.
-      </p>
-    );
+  // Map Sanity _type to our internal filter keys
+  const getCatKey = (type) => {
+    if (type === "post") return "blog";
+    if (type === "documentaryProject") return "essay"; // <--- Updated here
+    if (type === "news") return "news";
+    return "all";
+  };
+
+  // 1. Filter entries based on active tab
+  const filteredEntries = entries.filter(
+    (e) => filter === "all" || getCatKey(e._type) === filter,
+  );
+
+  // 2. Split into columns after filtering to maintain the staggered layout
+  const colLeft = filteredEntries.filter((_, i) => i % 2 === 0);
+  const colRight = filteredEntries.filter((_, i) => i % 2 === 1);
+
+  const baseBtn =
+    "font-mono text-[0.62rem] tracking-[0.1em] uppercase px-4 py-1.5 border rounded-[3px] transition-all cursor-pointer";
+  const inactiveBtn =
+    "border-[#cec8c0] text-[#57524d] hover:border-[#1c1a17] hover:text-[#1c1a17] bg-transparent";
 
   return (
-    <>
-      <div className="w-7xl max-w-full mx-auto px-12 pb-20 pt-0">
-        <header className="flex items-end justify-between pt-18 pb-0 mb-10">
+    <main className="bg-[#eae6e0] min-h-screen">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 pt-24 pb-20">
+        {/* Header */}
+        <header className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
           <div>
-            <span className="block font-mono text-[0.65rem] tracking-[0.2em] uppercase text-[#8b6f4e] mb-3">
+            <span className="block font-mono text-[0.65rem] tracking-[0.2em] uppercase text-[#8b6f4e] mb-4">
               Journal
             </span>
-            <h1 className="font-display font-extralight text-[clamp(2.8rem,5.5vw,4.5rem)] leading-[1.0] tracking-[-0.02em] text-[#1c1a17]">
-              Recording Cambridge
-              <br />
-              <em
-                className="italic text-[#57524d]"
+            <h1 className="font-display font-light text-[clamp(2.5rem,6vw,4.5rem)] leading-[0.95] tracking-[-0.02em] text-[#1c1a17]">
+              Recording Cambridge <br />
+              <span
+                className="italic text-[#57524d] font-extralight"
                 style={{ fontVariationSettings: "'wdth' 75" }}
               >
                 in town & gown
-              </em>
+              </span>
             </h1>
           </div>
-          <div className="text-right pb-1 hidden md:block">
-            <span className="block font-mono text-[0.62rem] tracking-[0.14em] text-[#9e9890] mb-1">
-              {posts.length} entries
+          <div className="md:text-right">
+            <span className="block font-mono text-[0.62rem] tracking-[0.14em] text-[#9e9890] mb-2 uppercase">
+              {filteredEntries.length} entries
             </span>
-            <p className="font-[family-name:var(--font-body)] italic text-[0.95rem] text-[#57524d] max-w-[200px] text-right leading-snug">
-              Blog, news and photo essays in one place.
+            <p className="italic text-[0.95rem] text-[#57524d] max-w-[220px] leading-relaxed">
+              Blog, news and photo essays — all in one place.
             </p>
           </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 items-start">
-          <div className="flex flex-col gap-16">
-            {posts
-              .filter((_, i) => i % 2 === 0)
-              .map((post) => (
-                <BlogCard key={post._id || post.slug} post={post} />
+        {/* Filter Bar */}
+        <nav className="flex flex-wrap items-center gap-3 mb-16">
+          <span className="font-mono text-[0.6rem] tracking-[0.18em] uppercase text-[#9e9890] mr-2">
+            Show
+          </span>
+          {[
+            {
+              id: "all",
+              label: "All",
+              active: "bg-[#1c1a17] text-white border-[#1c1a17]",
+            },
+            {
+              id: "blog",
+              label: "Blog",
+              active: "bg-[#7a5838] text-white border-[#7a5838]",
+            },
+            {
+              id: "news",
+              label: "News",
+              active: "bg-[#2a6a50] text-white border-[#2a6a50]",
+            },
+            {
+              id: "essay",
+              label: "Essay",
+              active: "bg-[#5848a0] text-white border-[#5848a0]",
+            },
+          ].map((btn) => (
+            <button
+              key={btn.id}
+              onClick={() => setFilter(btn.id)}
+              className={`${baseBtn} ${filter === btn.id ? btn.active : inactiveBtn}`}
+            >
+              {btn.label}
+            </button>
+          ))}
+        </nav>
+
+        {/* Masonry-style Grid */}
+        {filteredEntries.length === 0 ? (
+          <p className="font-mono text-[0.65rem] tracking-[0.14em] uppercase text-[#9e9890] py-32 text-center">
+            No entries found for this category.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-24 items-start">
+            <div className="flex flex-col gap-24">
+              {colLeft.map((entry) => (
+                <BlogCard key={entry._id} post={entry} />
               ))}
-          </div>
-          <div className="flex flex-col gap-16 mt-0 md:mt-32">
-            {posts
-              .filter((_, i) => i % 2 === 1)
-              .map((post) => (
-                <BlogCard key={post._id || post.slug} post={post} />
+            </div>
+            <div className="flex flex-col gap-24 md:mt-32">
+              {colRight.map((entry) => (
+                <BlogCard key={entry._id} post={entry} />
               ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* REUSED NEWSLETTER COMPONENT */}
       <Newsletter
         title="Quiet dispatches"
         italicTitle="from the field"
-        description="New work and process notes, sent sparingly. Never sold."
+        description="New work and process notes, sent sparingly."
       />
-    </>
+    </main>
   );
 }
