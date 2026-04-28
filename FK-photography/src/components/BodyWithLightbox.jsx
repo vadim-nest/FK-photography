@@ -3,7 +3,7 @@ import React, { useMemo, useCallback } from "react";
 import { PortableBody } from "@/components/portable/PortableBody.jsx";
 import { useLightbox } from "@/hooks/useLightbox.js";
 import { toLightboxSlide } from "@/lib/sanity/toLightboxSlide.js";
-import { BentoGrid } from "./blog/BentoGrid";
+import { BentoGrid } from "./journal/BentoGrid";
 
 export function BodyWithLightbox({ blocks }) {
   const lightbox = useLightbox();

@@ -27,7 +27,7 @@ const PROJECT_QUERY = `*[_type == "documentaryProject" && slug.current == $slug]
 
 export async function data(pageContext) {
   const { slug } = pageContext.routeParams;
-  // Use the 'sanity' variable to match your blog client
+  // Use the 'sanity' variable to match the shared Sanity client.
   const project = await sanity.fetch(PROJECT_QUERY, { slug });
 
   return { project: project || null };

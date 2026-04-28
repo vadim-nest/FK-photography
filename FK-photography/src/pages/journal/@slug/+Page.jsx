@@ -5,7 +5,7 @@ import LightboxProvider from "@/providers/LightboxProvider.jsx";
 import { BodyWithLightbox } from "@/components/BodyWithLightbox.jsx";
 import { Newsletter } from "@/components/ui/Newsletter.jsx";
 import { YourView } from "@/components/ui/YourView.jsx";
-import { CategoryPill } from "@/components/blog/CategoryPill.jsx";
+import { CategoryPill } from "@/components/journal/CategoryPill.jsx";
 
 // HELPERS
 function formatDate(dateString) {
@@ -38,17 +38,17 @@ function go(e, to) {
 }
 
 // RECENT POSTS (Kept internal for now since it maps specific layout)
-function RecentPosts({ posts = [] }) {
+function RecentJournalEntries({ posts = [] }) {
   if (!posts.length) return null;
   return (
     <div className="w-7xl max-w-full mx-auto px-6 lg:px-12 py-16">
       <div className="flex justify-between items-baseline mb-8 pb-4 border-b border-[#cec8c0]">
         <h3 className="font-display font-light text-[1.3rem] text-[#1c1a17]">
-          Recent posts
+          Recent journal entries
         </h3>
         <a
-          href="/blog"
-          onClick={(e) => go(e, "/blog")}
+          href="/journal"
+          onClick={(e) => go(e, "/journal")}
           className="font-mono text-[0.6rem] tracking-[0.14em] uppercase text-[#9e9890] hover:text-[#8b6f4e] transition-colors no-underline"
         >
           View all →
@@ -56,7 +56,7 @@ function RecentPosts({ posts = [] }) {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {posts.slice(0, 3).map((p) => {
-          const href = `/blog/${p.slug}`;
+          const href = `/journal/${p.slug}`;
           return (
             <a
               key={p._id || p.slug}
@@ -100,7 +100,7 @@ function RecentPosts({ posts = [] }) {
 }
 
 // MAIN PAGE
-export default function PostPage() {
+export default function JournalEntryPage() {
   const { post, recentPosts = [] } = useData();
   const readTime = useMemo(() => getReadingTime(post?.body), [post?.body]);
   const dateStr = formatDate(post?.publishedAt || post?._createdAt);
@@ -118,8 +118,8 @@ export default function PostPage() {
       <main id="main" className="overflow-x-hidden pb-32">
         <header className="w-3xl max-w-full mx-auto px-6 lg:px-12 pt-24 pb-8">
           <a
-            href="/blog"
-            onClick={(e) => go(e, "/blog")}
+            href="/journal"
+            onClick={(e) => go(e, "/journal")}
             className="inline-flex items-center gap-2 font-mono text-[0.6rem] tracking-[0.14em] uppercase text-[#9e9890] hover:text-[#1c1a17] transition-colors mb-10 no-underline"
           >
             ← Journal
@@ -165,7 +165,7 @@ export default function PostPage() {
         )}
 
         <Newsletter />
-        <RecentPosts posts={recentPosts} />
+        <RecentJournalEntries posts={recentPosts} />
 
         <div className="w-7xl max-w-full mx-auto px-6 lg:px-12">
           <YourView />

@@ -24,7 +24,7 @@ const DEFAULT_SECTIONS = [
   {
     title: "Journal",
     smallText: "Recording Cambridge in both town and gown.",
-    href: "/blog",
+    href: "/journal",
     layout: "journal",
   },
 ];
@@ -78,17 +78,17 @@ function plainExcerpt(excerpt) {
 }
 
 function journalHref(entry) {
-  if (entry?._type === "news") return entry.externalLink || "/blog";
+  if (entry?._type === "news") return entry.externalLink || "/journal";
   if (entry?._type === "documentaryProject") {
-    return entry.slug ? `/documentary-photography/${entry.slug}` : "/blog";
+    return entry.slug ? `/documentary-photography/${entry.slug}` : "/journal";
   }
-  return entry?.slug ? `/blog/${entry.slug}` : "/blog";
+  return entry?.slug ? `/journal/${entry.slug}` : "/journal";
 }
 
 function journalLabel(entry) {
   if (entry?._type === "news") return "News";
   if (entry?._type === "documentaryProject") return "Essay";
-  return "Blog";
+  return "Journal";
 }
 
 function formatJournalDate(date) {

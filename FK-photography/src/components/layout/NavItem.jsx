@@ -8,7 +8,7 @@ export const NavItem = ({ item, onClick, scrolled = true }) => {
   const href = ensureLeadingSlash(item?.href);
   const external = isExternal(href);
 
-  // Active if exact match, or if we're on a sub-path (e.g. /blog/post-slug marks /blog active)
+  // Active if exact match, or if we're on a sub-path (e.g. /journal/post-slug marks /journal active)
   const isActive =
     !external &&
     (href === urlPathname || (href !== "/" && urlPathname.startsWith(href)));

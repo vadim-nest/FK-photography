@@ -126,7 +126,7 @@ export default defineType({
         {
           title: 'Journal',
           smallText: 'Recording Cambridge in both town and gown.',
-          href: '/blog',
+          href: '/journal',
           layout: 'journal',
         },
       ],

@@ -1,7 +1,7 @@
-// src/pages/blog/+Page.jsx
+// src/pages/journal/+Page.jsx
 import React, { useState } from "react";
 import { useData } from "vike-react/useData";
-import { BlogCard } from "@/components/blog/BlogCard";
+import { JournalCard } from "@/components/journal/JournalCard";
 import { Newsletter } from "@/components/ui/Newsletter.jsx";
 
 export default function JournalIndex() {
@@ -10,8 +10,8 @@ export default function JournalIndex() {
 
   // Map Sanity _type to our internal filter keys
   const getCatKey = (type) => {
-    if (type === "post") return "blog";
-    if (type === "documentaryProject") return "essay"; // <--- Updated here
+    if (type === "post") return "journal";
+    if (type === "documentaryProject") return "essay";
     if (type === "news") return "news";
     return "all";
   };
@@ -54,7 +54,7 @@ export default function JournalIndex() {
               {filteredEntries.length} entries
             </span>
             <p className="italic text-[0.95rem] text-[#57524d] max-w-[220px] leading-relaxed">
-              Blog, news and photo essays — all in one place.
+              Journal notes, news and photo essays - all in one place.
             </p>
           </div>
         </header>
@@ -71,8 +71,8 @@ export default function JournalIndex() {
               active: "bg-[#1c1a17] text-white border-[#1c1a17]",
             },
             {
-              id: "blog",
-              label: "Blog",
+              id: "journal",
+              label: "Journal",
               active: "bg-[#7a5838] text-white border-[#7a5838]",
             },
             {
@@ -105,12 +105,12 @@ export default function JournalIndex() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-24 items-start">
             <div className="flex flex-col gap-24">
               {colLeft.map((entry) => (
-                <BlogCard key={entry._id} post={entry} />
+                <JournalCard key={entry._id} post={entry} />
               ))}
             </div>
             <div className="flex flex-col gap-24 md:mt-32">
               {colRight.map((entry) => (
-                <BlogCard key={entry._id} post={entry} />
+                <JournalCard key={entry._id} post={entry} />
               ))}
             </div>
           </div>

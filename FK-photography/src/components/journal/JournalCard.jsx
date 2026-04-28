@@ -1,11 +1,11 @@
-// src/components/blog/BlogCard.jsx
+// src/components/journal/JournalCard.jsx
 import React from "react";
 import { SmartImage } from "@/components/media/SmartImage.jsx";
 import { navigate } from "vike/client/router";
 import { PortableText } from "@portabletext/react";
 
 const CAT_COLOURS = {
-  blog: {
+  journal: {
     text: "text-[#7a5838]",
     border: "border-[rgba(122,88,56,0.35)]",
     bg: "bg-[rgba(122,88,56,0.06)]",
@@ -72,21 +72,20 @@ function CategoryPill({ category }) {
   );
 }
 
-export function BlogCard({ post }) {
+export function JournalCard({ post }) {
   const type = post?._type;
   const slug = post?.slug || "";
 
   // 1. Determine destination and behavior
-  let href = `/blog/${slug}`;
+  let href = `/journal/${slug}`;
   let isExternal = false;
-  let categoryLabel = "Blog";
+  let categoryLabel = "Journal";
 
   if (type === "news") {
     href = post.externalLink || "";
     isExternal = !!post.externalLink;
     categoryLabel = "News";
   } else if (type === "documentaryProject") {
-    // <--- Updated here
     href = `/documentary-photography/${slug}`;
     categoryLabel = "Essay";
   }

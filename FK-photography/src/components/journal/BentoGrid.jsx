@@ -1,4 +1,4 @@
-// src/components/blog/BentoGallery.jsx
+// src/components/journal/BentoGallery.jsx
 import React, { useMemo, useRef, useState, useEffect } from "react";
 
 const GAP = 11;

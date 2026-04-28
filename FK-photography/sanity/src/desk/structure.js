@@ -39,7 +39,7 @@ export const deskStructure = (S) =>
       S.documentTypeListItem('news'),
       S.documentTypeListItem('story'),
       S.documentTypeListItem('gallery'),
-      S.documentTypeListItem('post'),
+      S.documentTypeListItem('post').title('Journal Entries'),
 
       // New: Documentary Projects List
       S.documentTypeListItem('documentaryProject').title('Documentaries'),

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { useData } from "vike-react/useData";
-import { BentoGrid } from "@/components/blog/BentoGrid.jsx";
+import { BentoGrid } from "@/components/journal/BentoGrid.jsx";
 import LightboxProvider from "@/providers/LightboxProvider.jsx";
 import { useLightbox } from "@/hooks/useLightbox.js";
 

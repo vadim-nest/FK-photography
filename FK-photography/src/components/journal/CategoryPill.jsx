@@ -1,7 +1,7 @@
 import React from "react";
 
 const CAT_COLOURS = {
-  blog: {
+  journal: {
     text: "text-[#7a5838]",
     border: "border-[rgba(122,88,56,0.3)]",
     bg: "bg-[rgba(122,88,56,0.06)]",

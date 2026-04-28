@@ -1,4 +1,4 @@
-// src/pages/blog/+data.js
+// src/pages/journal/+data.js
 import { sanity } from "@/lib/sanity/client";
 
 const JOURNAL_QUERY = `
