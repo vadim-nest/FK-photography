@@ -10,11 +10,22 @@ function getAspectRatio(image) {
   return 1.35;
 }
 
-function MasonryImage({ image, index, onClick }) {
+function normalizeSections(page) {
+  return (page?.sections ?? []).filter(
+    (section) => section?.images?.length > 0,
+  );
+}
+
+function MasonryImage({ image, index, onClick, featured = false }) {
   const aspectRatio = getAspectRatio(image);
 
   return (
-    <figure className="performance-masonry-item mb-4 break-inside-avoid overflow-hidden rounded-[0.75rem] bg-[#d8d4ce]">
+    <figure
+      className={[
+        "performance-masonry-item break-inside-avoid overflow-hidden rounded-[0.75rem] bg-[#d8d4ce]",
+        featured ? "mb-0" : "mb-4",
+      ].join(" ")}
+    >
       <button
         type="button"
         onClick={() => onClick(image)}
@@ -42,14 +53,88 @@ function MasonryImage({ image, index, onClick }) {
   );
 }
 
+function SectionHeader({ section, index }) {
+  return (
+    <header className="mb-8 grid gap-8 md:grid-cols-[0.78fr_1.22fr] md:items-end">
+      <div>
+        <span className="mb-4 block font-mono text-[0.58rem] uppercase tracking-[0.2em] text-[#8b6f4e]">
+          {section.subtitle || `Set ${index + 1}`}
+        </span>
+        <h2 className="font-display text-[clamp(2.1rem,4.4vw,4.6rem)] font-light leading-[0.95] tracking-normal text-[#1c1a17]">
+          {section.title}
+        </h2>
+      </div>
+      {section.text && (
+        <p className="max-w-xl text-[0.98rem] leading-[1.75] text-[#57524d] md:justify-self-end">
+          {section.text}
+        </p>
+      )}
+    </header>
+  );
+}
+
+function MasonrySection({ section, sectionIndex, onImageClick }) {
+  return (
+    <section className="mx-auto max-w-7xl px-6 py-16 lg:px-12 lg:py-24">
+      <SectionHeader section={section} index={sectionIndex} />
+      <div
+        className="performance-masonry"
+        aria-label={`${section.title} performance images`}
+      >
+        {section.images.map((image, index) => (
+          <MasonryImage
+            key={image._key || image.url || index}
+            image={image}
+            index={index}
+            onClick={onImageClick}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FeaturedSection({ section, sectionIndex, onImageClick }) {
+  const [featured, ...rest] = section.images;
+
+  return (
+    <section className="mx-auto max-w-7xl px-6 py-16 lg:px-12 lg:py-24">
+      <SectionHeader section={section} index={sectionIndex} />
+      <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+        <MasonryImage
+          image={featured}
+          index={0}
+          onClick={onImageClick}
+          featured
+        />
+        <div className="performance-masonry performance-masonry-compact">
+          {rest.length > 0 ? (
+            rest.map((image, index) => (
+              <MasonryImage
+                key={image._key || image.url || index}
+                image={image}
+                index={index + 1}
+                onClick={onImageClick}
+              />
+            ))
+          ) : (
+            <div className="min-h-44 rounded-[0.75rem] bg-[#d8d4ce]" />
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function PerformanceContent() {
   const { page } = useData();
-  const images = useMemo(() => page?.images ?? [], [page]);
+  const sections = useMemo(() => normalizeSections(page), [page]);
   const lightbox = useLightbox();
 
   const slides = useMemo(
     () =>
-      images
+      sections
+        .flatMap((section) => section.images ?? [])
         .filter((image) => image?.url)
         .map((image, index) => ({
           src: image.url,
@@ -57,7 +142,7 @@ function PerformanceContent() {
           alt: image.alt || "",
           description: image.caption || undefined,
         })),
-    [images],
+    [sections],
   );
 
   const handleImageClick = useCallback(
@@ -70,12 +155,12 @@ function PerformanceContent() {
 
   return (
     <main id="main">
-      <section className="mx-auto max-w-7xl px-6 lg:px-12 pt-24 pb-10">
+      <section className="mx-auto max-w-7xl px-6 pb-10 pt-24 lg:px-12">
         <div className="max-w-3xl">
-          <span className="block font-mono text-[0.62rem] tracking-[0.2em] uppercase text-[#8b6f4e] mb-4">
+          <span className="mb-4 block font-mono text-[0.62rem] uppercase tracking-[0.2em] text-[#8b6f4e]">
             Live Performance Photography
           </span>
-          <h1 className="font-display font-light text-[clamp(3rem,7vw,6rem)] leading-[0.95] tracking-[-0.025em] text-[#1c1a17]">
+          <h1 className="font-display text-[clamp(3rem,7vw,6rem)] font-light leading-[0.95] tracking-normal text-[#1c1a17]">
             {page?.title || "Performance"}
           </h1>
           {page?.intro && (
@@ -86,25 +171,31 @@ function PerformanceContent() {
         </div>
       </section>
 
-      <section
-        className="performance-masonry mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-32"
-        aria-label="Performance photography gallery"
-      >
-        {images.length > 0 ? (
-          images.map((image, index) => (
-            <MasonryImage
-              key={image._key || image.url || index}
-              image={image}
-              index={index}
-              onClick={handleImageClick}
+      {sections.length > 0 ? (
+        sections.map((section, index) =>
+          section.layout === "featured" ? (
+            <FeaturedSection
+              key={section._key || section.title || index}
+              section={section}
+              sectionIndex={index}
+              onImageClick={handleImageClick}
             />
-          ))
-        ) : (
-          <p className="px-2 font-mono text-[0.7rem] tracking-[0.1em] uppercase text-[#9e9890]">
-            Performance images coming soon.
+          ) : (
+            <MasonrySection
+              key={section._key || section.title || index}
+              section={section}
+              sectionIndex={index}
+              onImageClick={handleImageClick}
+            />
+          ),
+        )
+      ) : (
+        <section className="mx-auto max-w-7xl px-6 py-24 lg:px-12">
+          <p className="font-mono text-[0.7rem] uppercase tracking-[0.1em] text-[#9e9890]">
+            Performance sections coming soon.
           </p>
-        )}
-      </section>
+        </section>
+      )}
 
       <style>{`
         .performance-masonry {
@@ -123,6 +214,11 @@ function PerformanceContent() {
             column-count: 3;
             column-gap: 1.25rem;
           }
+
+          .performance-masonry-compact {
+            column-count: 2;
+          }
+
           .performance-masonry-item {
             margin-bottom: 1.25rem;
           }
@@ -131,6 +227,10 @@ function PerformanceContent() {
         @media (min-width: 1280px) {
           .performance-masonry {
             column-count: 4;
+          }
+
+          .performance-masonry-compact {
+            column-count: 2;
           }
         }
       `}</style>

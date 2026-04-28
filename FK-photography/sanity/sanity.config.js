@@ -17,13 +17,13 @@ export default defineConfig({
   form: {
     image: {
       // 2. Explicitly set the mediaAssetSource as the only option
-      assetSources: (previousAssetSources) => {
+      assetSources: () => {
         return [mediaAssetSource]
       },
     },
     // Do the same for files if you use them
     file: {
-      assetSources: (previousAssetSources) => {
+      assetSources: () => {
         return [mediaAssetSource]
       },
     },
