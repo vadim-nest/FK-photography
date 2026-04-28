@@ -9,7 +9,6 @@ const PERFORMANCE_PAGE_QUERY = `*[_type == "performancePage"][0] {
     title,
     subtitle,
     text,
-    layout,
     "images": images[] {
       _key,
       "url": asset->url,

@@ -1,55 +1,12 @@
 import React, { useCallback, useMemo } from "react";
 import { useData } from "vike-react/useData";
+import { BentoGrid } from "@/components/blog/BentoGrid.jsx";
 import LightboxProvider from "@/providers/LightboxProvider.jsx";
 import { useLightbox } from "@/hooks/useLightbox.js";
-
-function getAspectRatio(image) {
-  const { width, height, aspectRatio } = image?.dimensions ?? {};
-  if (aspectRatio) return aspectRatio;
-  if (width && height) return width / height;
-  return 1.35;
-}
 
 function normalizeSections(page) {
   return (page?.sections ?? []).filter(
     (section) => section?.images?.length > 0,
-  );
-}
-
-function MasonryImage({ image, index, onClick, featured = false }) {
-  const aspectRatio = getAspectRatio(image);
-
-  return (
-    <figure
-      className={[
-        "performance-masonry-item break-inside-avoid overflow-hidden rounded-[0.75rem] bg-[#d8d4ce]",
-        featured ? "mb-0" : "mb-4",
-      ].join(" ")}
-    >
-      <button
-        type="button"
-        onClick={() => onClick(image)}
-        className="group block w-full cursor-zoom-in border-0 bg-transparent p-0 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c8a96e]"
-      >
-        {image?.url ? (
-          <img
-            src={image.url}
-            alt={image.alt || ""}
-            className="block w-full h-auto transition duration-700 ease-out group-hover:scale-[1.025] group-hover:brightness-105"
-            style={{ aspectRatio }}
-            loading={index < 6 ? "eager" : "lazy"}
-            decoding="async"
-          />
-        ) : (
-          <div style={{ aspectRatio }} />
-        )}
-      </button>
-      {image?.caption && (
-        <figcaption className="px-1 pt-2 font-mono text-[0.58rem] tracking-[0.08em] text-[#8b8580]">
-          {image.caption}
-        </figcaption>
-      )}
-    </figure>
   );
 }
 
@@ -73,55 +30,11 @@ function SectionHeader({ section, index }) {
   );
 }
 
-function MasonrySection({ section, sectionIndex, onImageClick }) {
+function PerformanceSection({ section, sectionIndex, onImageClick }) {
   return (
     <section className="mx-auto max-w-7xl px-6 py-16 lg:px-12 lg:py-24">
       <SectionHeader section={section} index={sectionIndex} />
-      <div
-        className="performance-masonry"
-        aria-label={`${section.title} performance images`}
-      >
-        {section.images.map((image, index) => (
-          <MasonryImage
-            key={image._key || image.url || index}
-            image={image}
-            index={index}
-            onClick={onImageClick}
-          />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function FeaturedSection({ section, sectionIndex, onImageClick }) {
-  const [featured, ...rest] = section.images;
-
-  return (
-    <section className="mx-auto max-w-7xl px-6 py-16 lg:px-12 lg:py-24">
-      <SectionHeader section={section} index={sectionIndex} />
-      <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
-        <MasonryImage
-          image={featured}
-          index={0}
-          onClick={onImageClick}
-          featured
-        />
-        <div className="performance-masonry performance-masonry-compact">
-          {rest.length > 0 ? (
-            rest.map((image, index) => (
-              <MasonryImage
-                key={image._key || image.url || index}
-                image={image}
-                index={index + 1}
-                onClick={onImageClick}
-              />
-            ))
-          ) : (
-            <div className="min-h-44 rounded-[0.75rem] bg-[#d8d4ce]" />
-          )}
-        </div>
-      </div>
+      <BentoGrid value={{ images: section.images }} onImageClick={onImageClick} />
     </section>
   );
 }
@@ -172,23 +85,14 @@ function PerformanceContent() {
       </section>
 
       {sections.length > 0 ? (
-        sections.map((section, index) =>
-          section.layout === "featured" ? (
-            <FeaturedSection
-              key={section._key || section.title || index}
-              section={section}
-              sectionIndex={index}
-              onImageClick={handleImageClick}
-            />
-          ) : (
-            <MasonrySection
-              key={section._key || section.title || index}
-              section={section}
-              sectionIndex={index}
-              onImageClick={handleImageClick}
-            />
-          ),
-        )
+        sections.map((section, index) => (
+          <PerformanceSection
+            key={section._key || section.title || index}
+            section={section}
+            sectionIndex={index}
+            onImageClick={handleImageClick}
+          />
+        ))
       ) : (
         <section className="mx-auto max-w-7xl px-6 py-24 lg:px-12">
           <p className="font-mono text-[0.7rem] uppercase tracking-[0.1em] text-[#9e9890]">
@@ -196,44 +100,6 @@ function PerformanceContent() {
           </p>
         </section>
       )}
-
-      <style>{`
-        .performance-masonry {
-          column-count: 1;
-          column-gap: 1rem;
-        }
-
-        @media (min-width: 640px) {
-          .performance-masonry {
-            column-count: 2;
-          }
-        }
-
-        @media (min-width: 1024px) {
-          .performance-masonry {
-            column-count: 3;
-            column-gap: 1.25rem;
-          }
-
-          .performance-masonry-compact {
-            column-count: 2;
-          }
-
-          .performance-masonry-item {
-            margin-bottom: 1.25rem;
-          }
-        }
-
-        @media (min-width: 1280px) {
-          .performance-masonry {
-            column-count: 4;
-          }
-
-          .performance-masonry-compact {
-            column-count: 2;
-          }
-        }
-      `}</style>
     </main>
   );
 }

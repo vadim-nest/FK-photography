@@ -59,19 +59,6 @@ export default defineType({
               description: 'Optional short note for this set of photos.',
             }),
             defineField({
-              name: 'layout',
-              title: 'Layout',
-              type: 'string',
-              initialValue: 'masonry',
-              options: {
-                list: [
-                  {title: 'Masonry grid', value: 'masonry'},
-                  {title: 'Featured image + grid', value: 'featured'},
-                ],
-                layout: 'radio',
-              },
-            }),
-            defineField({
               name: 'images',
               title: 'Images',
               type: 'array',
