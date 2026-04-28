@@ -21,6 +21,15 @@ export const deskStructure = (S) =>
             .documentId('documentaryHubSettings'),
         ),
 
+      S.listItem()
+        .title('Performance Page')
+        .child(
+          S.editor()
+            .id('performancePage')
+            .schemaType('performancePage')
+            .documentId('performancePage'),
+        ),
+
       S.divider(),
 
       // --- LISTS ---

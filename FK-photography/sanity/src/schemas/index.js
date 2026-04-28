@@ -8,6 +8,7 @@ import post from './documents/post'
 import news from './documents/news'
 import documentaryProject from './documents/documentaryProject'
 import documentaryHubSettings from './documents/documentaryHubSettings'
+import performancePage from './documents/performancePage'
 import imageAsset from './documents/imageAsset'
 import bentoGallery from './documents/bentoGallery'
 
@@ -27,6 +28,7 @@ export const schemaTypes = [
   post,
   documentaryProject,
   documentaryHubSettings,
+  performancePage,
   imageAsset,
   bentoGallery,
   // objects
