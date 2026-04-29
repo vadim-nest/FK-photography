@@ -85,8 +85,8 @@ export function BentoGrid({ value, onImageClick }) {
                 src={img.url}
                 alt={img.alt || ""}
                 loading="lazy"
-                // object-cover is safe here because the container is already the exact right aspect ratio
-                className="w-full h-full object-cover block transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                className="w-full h-full object-contain block"
+                style={{ borderRadius: "1rem" }}
               />
             </figure>
           ))}

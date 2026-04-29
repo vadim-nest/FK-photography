@@ -132,12 +132,13 @@ export function JournalCard({ post }) {
         </div>
 
         {displayImage ? (
-          <div className="w-full overflow-hidden rounded-[1rem] bg-[rgba(0,0,0,0.03)]">
+          <div className="w-full rounded-[1rem] bg-[rgba(0,0,0,0.03)]">
             <SmartImage
               image={displayImage}
               alt={displayImage?.alt || post?.title || ""}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
-              className="w-full h-auto block transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.03]"
+              radius="1rem"
+              className="w-full h-auto block"
             />
           </div>
         ) : (

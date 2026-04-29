@@ -8,6 +8,7 @@ export function SmartImage({
   sizes = "(max-width: 800px) 100vw, 1200px",
   widths = [400, 800, 1200, 1600],
   aspect,
+  radius = "0.75rem",
   className = "",
   priority = false,
 }) {
@@ -31,9 +32,10 @@ export function SmartImage({
 
   return (
     <div
-      className={`relative overflow-hidden bg-cover bg-center ${className}`}
+      className={`relative overflow-hidden bg-contain bg-center bg-no-repeat ${className}`}
       style={{
         aspectRatio: ratio,
+        borderRadius: radius,
         backgroundImage: lqip ? `url(${lqip})` : undefined,
       }}
     >
@@ -49,11 +51,11 @@ export function SmartImage({
         onLoad={() => setLoaded(true)}
         onError={() => setLoaded(true)}
         className={[
-          "w-full h-full object-cover block",
-          "transition-[filter,transform] duration-[250ms] ease-out",
-          "will-change-[filter,transform]",
-          loaded ? "blur-none scale-100" : "blur-md scale-[1.03]",
+          "w-full h-full object-contain block",
+          "transition-[filter] duration-[250ms] ease-out",
+          loaded ? "blur-none" : "blur-md",
         ].join(" ")}
+        style={{ borderRadius: radius }}
       />
       <style>{`
 @media (prefers-reduced-motion: reduce) { img { transition: none !important; } }

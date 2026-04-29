@@ -5,6 +5,7 @@ export const navigationQuery = `*[_type == "navigationItem" && visible == true] 
     title
   ),
   "href": select(
+    title in ["About", "About me", "About Me"] => "about-faruk-kara",
     linkType == "internal" && internalRef->slug.current == "blog" => "journal",
     linkType == "internal" => internalRef->slug.current,
     linkType == "external" => externalUrl

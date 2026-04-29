@@ -40,12 +40,10 @@ export default defineType({
       fieldset: 'header',
     }),
     defineField({
-      name: 'content',
-      title: 'Header Image / Legacy Content',
-      type: 'richText',
-      description:
-        'The first image is used as the homepage main image. The first text block is used as the quote fallback.',
-      validation: (Rule) => Rule.min(0),
+      name: 'headerImage',
+      title: 'Header Image',
+      type: 'imageWithMeta',
+      description: 'Main image shown in the homepage header.',
       fieldset: 'header',
     }),
     defineField({

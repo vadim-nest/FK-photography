@@ -49,13 +49,14 @@ function Photo({
   return (
     <figure className={["group", className].join(" ")}>
       <div
-        className="rounded-[1rem] overflow-hidden cursor-zoom-in"
+        className="overflow-hidden rounded-[1rem] cursor-zoom-in"
         onClick={() => onClick?.(image)}
       >
         <img
           src={image.url}
           alt={image.alt || ""}
-          className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.015]"
+          className="w-full h-auto block rounded-[inherit]"
+          style={{ borderRadius: "1rem" }}
           loading={priority ? "eager" : "lazy"}
           sizes={sizes}
         />

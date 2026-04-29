@@ -9,7 +9,32 @@ const JOURNAL_QUERY = `
     "publishedAt": coalesce(publishedAt, _createdAt),
     excerpt, 
     "slug": slug.current,
-    "image": coalesce(heroImage, coverImage, image),
+    "image": select(
+      defined(heroImage.asset) => heroImage{
+        ...,
+        asset->{
+          _id,
+          url,
+          metadata{ lqip, dimensions{ aspectRatio, width, height } }
+        }
+      },
+      defined(coverImage.asset) => coverImage{
+        ...,
+        asset->{
+          _id,
+          url,
+          metadata{ lqip, dimensions{ aspectRatio, width, height } }
+        }
+      },
+      defined(image.asset) => image{
+        ...,
+        asset->{
+          _id,
+          url,
+          metadata{ lqip, dimensions{ aspectRatio, width, height } }
+        }
+      }
+    ),
     externalLink
   }
 `;

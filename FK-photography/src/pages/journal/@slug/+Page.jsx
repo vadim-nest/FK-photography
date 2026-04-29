@@ -6,6 +6,7 @@ import { BodyWithLightbox } from "@/components/BodyWithLightbox.jsx";
 import { Newsletter } from "@/components/ui/Newsletter.jsx";
 import { YourView } from "@/components/ui/YourView.jsx";
 import { CategoryPill } from "@/components/journal/CategoryPill.jsx";
+import { SmartImage } from "@/components/media/SmartImage.jsx";
 
 // HELPERS
 function formatDate(dateString) {
@@ -64,16 +65,18 @@ function RecentJournalEntries({ posts = [] }) {
               onClick={(e) => go(e, href)}
               className="group block bg-[#eae6e0] hover:bg-[#cec8c0] rounded-[1rem] overflow-hidden transition-colors no-underline"
             >
-              <div className="w-full aspect-[16/9] overflow-hidden">
-                <div className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.04]">
+              <div className="w-full">
+                <div className="w-full">
                   {p.heroImage ? (
-                    <img
-                      src={p.heroImage?.url}
+                    <SmartImage
+                      image={p.heroImage}
                       alt=""
-                      className="w-full h-full object-cover"
+                      sizes="(max-width: 767px) 100vw, 33vw"
+                      radius="1rem"
+                      className="w-full"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-[#8090b0] to-[#607090]" />
+                    <div className="aspect-[4/3] w-full bg-gradient-to-br from-[#8090b0] to-[#607090]" />
                   )}
                 </div>
               </div>

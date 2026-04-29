@@ -10,7 +10,14 @@ export async function data(pageContext) {
     `*[_type == "post" && slug.current != $slug] | order(publishedAt desc)[0...3] {
       _id, title, "slug": slug.current, publishedAt, _createdAt,
       "category": categories[0]->title,
-      "heroImage": { "url": heroImage.asset->url, "alt": heroImage.alt }
+      heroImage{
+        ...,
+        asset->{
+          _id,
+          url,
+          metadata{ lqip, dimensions{ aspectRatio, width, height } }
+        }
+      }
     }`,
     { slug },
   );

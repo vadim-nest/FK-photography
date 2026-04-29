@@ -77,7 +77,8 @@ function LayoutCinematic({ project }) {
             <img
               src={img.url}
               alt={img.alt || project.title || ""}
-              className="w-full h-auto block transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.01]"
+              className="w-full h-auto block rounded-[inherit]"
+              style={{ borderRadius: "1rem" }}
               loading="lazy"
             />
           ) : (
@@ -142,7 +143,8 @@ function LayoutEditorial({ project }) {
             <img
               src={img.url}
               alt={img.alt || project.title || ""}
-              className="w-full h-auto block transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.025]"
+              className="w-full h-auto block rounded-[inherit]"
+              style={{ borderRadius: "1rem" }}
               loading="lazy"
             />
           ) : (
@@ -246,7 +248,8 @@ function LayoutSequence({ project }) {
                     <img
                       src={img.url}
                       alt={img?.alt || ""}
-                      className="w-full h-auto block transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.025]"
+                      className="w-full h-auto block rounded-[inherit]"
+                      style={{ borderRadius: "1rem" }}
                       loading="lazy"
                     />
                   ) : (

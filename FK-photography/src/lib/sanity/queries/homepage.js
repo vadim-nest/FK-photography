@@ -3,6 +3,14 @@ export const homepageQuery = `*[_id == "homepage"][0]{
   intro,
   quoteText,
   quoteAuthor,
+  headerImage{
+    ...,
+    asset->{
+      _id,
+      url,
+      metadata{ lqip, dimensions{ aspectRatio, width, height } }
+    }
+  },
   featureSections[]{
     ...,
     "smallText": coalesce(smallText, eyebrow),
@@ -17,9 +25,5 @@ export const homepageQuery = `*[_id == "homepage"][0]{
   },
   contactWidget,
   newsletterWidget,
-  content[]{
-    ..., 
-    imageWithMeta{..., asset->}
-  },
   seo{...}
 }`;

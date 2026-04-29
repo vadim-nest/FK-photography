@@ -9,6 +9,7 @@ import news from './documents/news'
 import documentaryProject from './documents/documentaryProject'
 import documentaryHubSettings from './documents/documentaryHubSettings'
 import performancePage from './documents/performancePage'
+import aboutPage from './documents/aboutPage'
 import imageAsset from './documents/imageAsset'
 import bentoGallery from './documents/bentoGallery'
 
@@ -29,6 +30,7 @@ export const schemaTypes = [
   documentaryProject,
   documentaryHubSettings,
   performancePage,
+  aboutPage,
   imageAsset,
   bentoGallery,
   // objects

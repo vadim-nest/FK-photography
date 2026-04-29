@@ -3,6 +3,8 @@ import React from "react";
 import { useData } from "vike-react/useData";
 import { SmartImage } from "@/components/media/SmartImage.jsx";
 import { Newsletter } from "@/components/ui/Newsletter.jsx";
+import { urlFor } from "@/lib/sanity/image";
+import { normalizeAspectRatio, sameHeightGridColumns } from "@/lib/utils";
 
 const FALLBACK_INTRO =
   "Cambridge-based photography shaped by atmosphere, movement, and the quiet tension of unscripted moments.";
@@ -32,17 +34,6 @@ const DEFAULT_SECTIONS = [
 function blockToPlainText(block) {
   if (!block?.children) return "";
   return block.children.map((child) => child.text ?? "").join("");
-}
-
-function splitQuoteFallback(text = "") {
-  const knownAuthor = "Ansel Adams";
-  if (text.endsWith(knownAuthor)) {
-    return {
-      text: text.slice(0, -knownAuthor.length).trim(),
-      author: knownAuthor,
-    };
-  }
-  return { text, author: "" };
 }
 
 function sectionHref(section) {
@@ -124,6 +115,50 @@ function ImageTile({ image, title, className = "", priority = false }) {
   );
 }
 
+function JournalImageTile({ image, title }) {
+  const meta = image?.asset?.metadata || {};
+  const ratio = normalizeAspectRatio(meta.dimensions?.aspectRatio);
+  const lqip = meta?.lqip;
+
+  if (!image?.asset) {
+    return (
+      <div className="home-journal-image flex items-center justify-center rounded-[0.75rem] bg-[#d8d4ce]">
+        <span className="px-6 text-center font-mono text-[0.6rem] uppercase tracking-[0.14em] text-[#9e9890]">
+          {title || "Image"}
+        </span>
+      </div>
+    );
+  }
+
+  const base = urlFor(image).auto("format").fit("max");
+  const src = base.height(620).url();
+  const srcSet = [320, 480, 620, 820]
+    .map((h) => `${base.height(h).url()} ${Math.round(h * ratio)}w`)
+    .join(", ");
+
+  return (
+    <div
+      className="home-journal-image relative overflow-hidden rounded-[0.75rem] bg-contain bg-center bg-no-repeat"
+      style={{
+        "--journal-image-ratio": ratio,
+        aspectRatio: ratio,
+        backgroundImage: lqip ? `url(${lqip})` : undefined,
+      }}
+    >
+      <img
+        src={src}
+        srcSet={srcSet}
+        sizes="(max-width: 767px) calc(100vw - 3rem), 30vw"
+        alt={image.alt || image.caption || title || ""}
+        loading="lazy"
+        decoding="async"
+        className="block h-full w-full rounded-[inherit] object-contain"
+        style={{ borderRadius: "0.75rem" }}
+      />
+    </div>
+  );
+}
+
 function DocumentarySection({ section }) {
   const images = section.images ?? [];
 
@@ -158,23 +193,29 @@ function DocumentarySection({ section }) {
 
 function PerformanceSection({ section }) {
   const images = section.images ?? [];
+  const displayImages = [images[0], images[1]];
+  const columns = sameHeightGridColumns(
+    displayImages,
+    (image) => image?.asset?.metadata?.dimensions?.aspectRatio,
+  );
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-16 lg:px-12 lg:py-24">
       <SectionHeading section={section} />
       <a
         href={sectionHref(section)}
-        className="mt-6 grid min-w-0 gap-5 no-underline md:grid-cols-[minmax(0,1.45fr)_minmax(0,0.78fr)]"
+        className="home-performance-grid mt-6 grid min-w-0 grid-cols-1 gap-5 no-underline"
+        style={{ "--performance-columns": columns }}
       >
         <ImageTile
           image={images[0]}
           title={section.title}
-          className="aspect-[1.48] w-full"
+          className="w-full"
         />
         <ImageTile
           image={images[1]}
           title={section.title}
-          className="aspect-[0.76] w-full"
+          className="w-full"
         />
       </a>
     </section>
@@ -183,13 +224,24 @@ function PerformanceSection({ section }) {
 
 function JournalSection({ section, entries = [] }) {
   const items = entries.length > 0 ? entries : [];
+  const displayItems = items.length ? items : [null, null, null];
+  const columns = sameHeightGridColumns(
+    displayItems,
+    (entry) => entry?.image?.asset?.metadata?.dimensions?.aspectRatio,
+  );
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-16 lg:px-12 lg:py-24">
       <SectionHeading section={section} />
-      <div className="mt-8 grid gap-6 md:grid-cols-3">
-        {(items.length ? items : [null, null, null]).map((entry, index) => {
+      <div
+        className="home-journal-grid mt-8 grid grid-cols-1 items-start gap-6"
+        style={{ "--journal-columns": columns }}
+      >
+        {displayItems.map((entry, index) => {
           const image = entry?.image;
+          const imageRatio = normalizeAspectRatio(
+            image?.asset?.metadata?.dimensions?.aspectRatio,
+          );
           const href = entry ? journalHref(entry) : sectionHref(section);
           const date = formatJournalDate(entry?.publishedAt);
           const isExternal = entry?._type === "news" && entry.externalLink;
@@ -200,17 +252,14 @@ function JournalSection({ section, entries = [] }) {
               href={href}
               target={isExternal ? "_blank" : undefined}
               rel={isExternal ? "noopener noreferrer" : undefined}
-              className="group block no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8b6f4e]"
+              className="group block min-w-0 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8b6f4e]"
+              style={{ "--journal-image-ratio": imageRatio }}
             >
               <div className="mb-3 flex items-center justify-between font-mono text-[0.55rem] tracking-[0.08em] text-[#1c1a17]">
                 <span>{entry ? journalLabel(entry) : "Journal"}</span>
                 <span>{date}</span>
               </div>
-              <ImageTile
-                image={image}
-                title={entry?.title || section.title}
-                className="aspect-[1.55] w-full"
-              />
+              <JournalImageTile image={image} title={entry?.title || section.title} />
               <h3 className="mt-4 text-[1.08rem] leading-[1.25] text-[#1c1a17] transition-colors group-hover:text-[#8b6f4e]">
                 {entry?.title || section.title}
               </h3>
@@ -276,15 +325,9 @@ function ContactWidget({ contact }) {
 
 export default function Page() {
   const { homepage, latestJournal = [] } = useData();
-  const content = homepage?.content ?? [];
-  const mainImage = content.find((item) =>
-    ["image", "imageWithMeta"].includes(item?._type),
-  );
-  const legacyQuote = splitQuoteFallback(
-    blockToPlainText(content.find((item) => item?._type === "block")),
-  );
-  const quoteText = homepage?.quoteText || legacyQuote.text;
-  const quoteAuthor = homepage?.quoteAuthor || legacyQuote.author;
+  const mainImage = homepage?.headerImage?.asset ? homepage.headerImage : null;
+  const quoteText = homepage?.quoteText;
+  const quoteAuthor = homepage?.quoteAuthor;
   const heading = homepage?.heading || "Faruk Kara photography";
   const intro = homepage?.intro || FALLBACK_INTRO;
   const sections =
@@ -295,15 +338,15 @@ export default function Page() {
 
   return (
     <main id="main" className="overflow-x-hidden">
-      <section className="home-hero relative mx-auto flex h-[calc(100svh-3.5rem)] max-w-[94rem] flex-col overflow-hidden px-6 pb-4 pt-6 lg:px-12 lg:pt-8">
-        <header className="shrink-0">
+      <section className="home-hero relative mx-auto flex h-[calc(100svh-3.5rem+2.75rem)] max-w-[94rem] flex-col overflow-hidden px-6 pb-[2.75rem] pt-6 lg:px-12 lg:pt-8">
+        <header className="home-hero-header shrink-0">
           <h1 className="font-display text-[clamp(2rem,5vw,5.2rem)] font-light leading-[0.95] tracking-normal text-[#1c1a17]">
             {heading}
           </h1>
         </header>
 
-        <div className="grid min-h-0 flex-1 grid-cols-1 content-start gap-6 py-5 md:grid-cols-[0.56fr_1.44fr] md:items-start lg:gap-12">
-          <div className="max-w-md md:pt-3">
+        <div className="home-hero-content grid min-h-0 flex-1 grid-cols-1 content-start gap-6 py-5 md:grid-cols-[0.56fr_1.44fr] md:items-start lg:gap-12">
+          <div className="home-hero-intro max-w-md md:pt-3">
             <p className="text-[clamp(0.92rem,1.4vw,1.08rem)] leading-[1.65] text-[#57524d]">
               {intro}
             </p>
@@ -316,6 +359,7 @@ export default function Page() {
                 alt={mainImage.alt || mainImage.caption || ""}
                 sizes="(max-width: 767px) 100vw, 66vw"
                 className="home-hero-image mx-auto w-full max-w-[900px] rounded-[0.75rem] md:mx-0"
+                radius="0.75rem"
                 priority
               />
             ) : (
@@ -325,7 +369,7 @@ export default function Page() {
         </div>
 
         {quoteText && (
-          <blockquote className="mx-auto mt-auto max-w-[26ch] shrink-0 pb-1 text-center font-display text-[clamp(1.2rem,2vw,2.5rem)] font-light leading-[1.08] tracking-normal text-[#1c1a17] md:max-w-[30ch]">
+          <blockquote className="home-hero-quote mx-auto mt-auto max-w-[26ch] shrink-0 text-center font-display text-[clamp(1.2rem,2vw,2.5rem)] font-light leading-[1.08] tracking-normal text-[#1c1a17] md:max-w-[30ch]">
             <p>{quoteText}</p>
             {quoteAuthor && (
               <footer className="mt-3 font-sans text-[clamp(0.68rem,0.85vw,0.82rem)] leading-none tracking-[0.14em] text-[#57524d]">
@@ -363,14 +407,36 @@ export default function Page() {
           width: min(100%, 900px, calc(var(--hero-image-max-height) * 1.5));
         }
 
+        .home-hero-quote {
+          transform: translateY(1.3rem);
+        }
+
+        .home-journal-image {
+          width: 100%;
+        }
+
+        @media (min-width: 768px) {
+          .home-performance-grid {
+            grid-template-columns: var(--performance-columns);
+          }
+
+          .home-journal-grid {
+            grid-template-columns: var(--journal-columns);
+          }
+        }
+
         @media (max-height: 760px) {
           .home-hero {
             padding-top: 1rem;
-            padding-bottom: 0.75rem;
+            padding-bottom: 2.75rem;
           }
 
           .home-hero-image {
             --hero-image-max-height: clamp(13rem, calc(100svh - 18rem), 31rem);
+          }
+
+          .home-hero-quote {
+            transform: translateY(1rem);
           }
         }
 
@@ -380,14 +446,73 @@ export default function Page() {
           }
         }
 
+        @media (min-width: 768px) and (max-height: 680px) {
+          .home-hero {
+            display: grid;
+            grid-template-columns: minmax(18rem, 0.58fr) minmax(0, 1.42fr);
+            grid-template-rows: minmax(0, 1fr) auto;
+            column-gap: 2rem;
+            padding-top: 1rem;
+            padding-bottom: 2.75rem;
+          }
+
+          .home-hero-header {
+            grid-column: 1;
+            grid-row: 1;
+            align-self: start;
+          }
+
+          .home-hero-header h1 {
+            font-size: clamp(2rem, 5.4vh, 3.1rem);
+          }
+
+          .home-hero-content {
+            display: contents;
+          }
+
+          .home-hero-intro {
+            grid-column: 1;
+            grid-row: 1;
+            align-self: end;
+            padding-top: 0;
+            padding-bottom: 1.25rem;
+          }
+
+          .home-hero-media {
+            grid-column: 2;
+            grid-row: 1;
+            align-self: start;
+            justify-self: end;
+            min-height: 0;
+          }
+
+          .home-hero-image {
+            --hero-image-max-height: clamp(13rem, calc(100svh - 10rem), 31rem);
+          }
+
+          .home-hero-quote {
+            grid-column: 1 / -1;
+            grid-row: 2;
+          }
+        }
+
         @media (max-width: 767px) {
           .home-hero {
             height: auto;
             min-height: calc(100svh - 3.5rem);
             overflow: visible;
+            padding-bottom: 1rem;
+          }
+
+          .home-hero-quote {
+            transform: none;
           }
 
           .home-hero-image {
+            width: 100%;
+          }
+
+          .home-journal-image {
             width: 100%;
           }
         }

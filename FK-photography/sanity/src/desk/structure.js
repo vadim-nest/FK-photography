@@ -30,6 +30,10 @@ export const deskStructure = (S) =>
             .documentId('performancePage'),
         ),
 
+      S.listItem()
+        .title('About Page')
+        .child(S.editor().id('aboutPage').schemaType('aboutPage').documentId('aboutPage')),
+
       S.divider(),
 
       // --- LISTS ---
