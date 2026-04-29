@@ -4,11 +4,11 @@ import { navigate } from "vike/client/router";
 export const ensureLeadingSlash = (href = "") =>
   !href
     ? "/"
-    : href.startsWith("/") || href.startsWith("http")
+    : href.startsWith("/") || /^[a-z][a-z0-9+.-]*:/i.test(href)
       ? href
       : `/${href}`;
 
-export const isExternal = (href = "") => /^https?:\/\//i.test(href);
+export const isExternal = (href = "") => /^[a-z][a-z0-9+.-]*:/i.test(href);
 
 /** Factory for onClick handlers that do SPA nav (and optionally close a sheet) */
 export const makeNavClick =

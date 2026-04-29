@@ -3,6 +3,7 @@ import { useData } from "vike-react/useData";
 import { SmartImage } from "@/components/media/SmartImage.jsx";
 import { PortableBody } from "@/components/portable/PortableBody.jsx";
 import { Newsletter } from "@/components/ui/Newsletter.jsx";
+import { ContactNudge } from "@/components/contact/ContactNudge.jsx";
 import { sameHeightGridColumns } from "@/lib/utils";
 
 function Portrait({ image, title }) {
@@ -135,6 +136,11 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <ContactNudge
+        title="Commissions, performances, and documentary stories."
+        description="Faruk is available for live performance coverage, theatre and rehearsal rooms, editorial assignments, and documentary work built on access and trust."
+      />
 
       <Newsletter
         title="Quiet dispatches"

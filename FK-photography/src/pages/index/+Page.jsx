@@ -3,6 +3,7 @@ import React from "react";
 import { useData } from "vike-react/useData";
 import { SmartImage } from "@/components/media/SmartImage.jsx";
 import { Newsletter } from "@/components/ui/Newsletter.jsx";
+import { DEFAULT_CONTACT_EMAIL, mailtoHref } from "@/lib/contact";
 import { urlFor } from "@/lib/sanity/image";
 import { normalizeAspectRatio, sameHeightGridColumns } from "@/lib/utils";
 
@@ -291,7 +292,7 @@ function ContactWidget({ contact }) {
   const description =
     details.description ||
     "For commissions, collaborations, prints, or performance coverage, send a note and we can start there.";
-  const email = details.email;
+  const email = details.email || DEFAULT_CONTACT_EMAIL;
   const linkText = details.linkText || "Start a conversation";
 
   return (
@@ -311,7 +312,7 @@ function ContactWidget({ contact }) {
           </p>
           {email && (
             <a
-              href={`mailto:${email}`}
+              href={mailtoHref(email)}
               className="inline-flex border-b border-[#c8a96e] pb-2 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-[#f2ede6] transition-colors hover:text-[#c8a96e]"
             >
               {linkText} &rarr;

@@ -5,6 +5,7 @@ import LightboxProvider from "@/providers/LightboxProvider.jsx";
 import { useLightbox } from "@/hooks/useLightbox.js";
 import { YourView } from "@/components/ui/YourView.jsx";
 import { Newsletter } from "@/components/ui/Newsletter.jsx";
+import { ContactNudge } from "@/components/contact/ContactNudge.jsx";
 
 function go(e, to) {
   if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
@@ -470,6 +471,11 @@ function ProjectContent({ project }) {
           </p>
         )}
       </div>
+
+      <ContactNudge
+        title="Have a story that needs this kind of attention?"
+        description="For documentary commissions, community stories, rehearsals, performances, or editorial work, email Faruk with the project, place, and rough timing."
+      />
 
       <Newsletter
         title="Quiet dispatches"

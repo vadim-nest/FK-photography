@@ -12,6 +12,7 @@ export default defineType({
       validation: (R) => R.required(),
     }),
     defineField({name: 'description', type: 'text', rows: 3, title: 'Description'}),
+    defineField({name: 'email', type: 'email', title: 'Contact email'}),
     // Switch to imageWithMeta so you can manage alt text
     defineField({name: 'logo', type: 'imageWithMeta', title: 'Logo'}),
     defineField({name: 'accentColor', type: 'string', title: 'Accent colour (hex)'}),

@@ -1,4 +1,4 @@
-export const navigationQuery = `*[_type == "navigationItem" && visible == true] | order(order asc) {
+export const navigationQuery = `*[_type == "navigationItem" && visible == true && !(title in ["Contact", "Contact me", "Contact Me"])] | order(order asc) {
   _id,
   "title": select(
     title == "Blog" => "Journal",

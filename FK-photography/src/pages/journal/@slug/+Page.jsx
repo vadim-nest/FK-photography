@@ -6,9 +6,10 @@ import { BodyWithLightbox } from "@/components/BodyWithLightbox.jsx";
 import { Newsletter } from "@/components/ui/Newsletter.jsx";
 import { YourView } from "@/components/ui/YourView.jsx";
 import { CategoryPill } from "@/components/journal/CategoryPill.jsx";
-import { SmartImage } from "@/components/media/SmartImage.jsx";
+import { JournalCard } from "@/components/journal/JournalCard";
+import { ContactNudge } from "@/components/contact/ContactNudge.jsx";
+import { sameHeightGridColumns } from "@/lib/utils";
 
-// HELPERS
 function formatDate(dateString) {
   if (!dateString) return "";
   return new Date(dateString).toLocaleDateString("en-GB", {
@@ -23,8 +24,8 @@ function getReadingTime(blocks) {
   let wordCount = 0;
   for (const block of blocks) {
     if (block._type === "block" && block.children) {
-      block.children.forEach((c) => {
-        if (c.text) wordCount += c.text.trim().split(/\s+/).length;
+      block.children.forEach((child) => {
+        if (child.text) wordCount += child.text.trim().split(/\s+/).length;
       });
     }
   }
@@ -38,11 +39,17 @@ function go(e, to) {
   navigate(to);
 }
 
-// RECENT POSTS (Kept internal for now since it maps specific layout)
 function RecentJournalEntries({ posts = [] }) {
   if (!posts.length) return null;
+
+  const displayPosts = posts.slice(0, 3);
+  const columns = sameHeightGridColumns(displayPosts, (post) => {
+    const image = post?.image || post?.heroImage || post?.coverImage;
+    return image?.asset?.metadata?.dimensions?.aspectRatio;
+  });
+
   return (
-    <div className="w-7xl max-w-full mx-auto px-6 lg:px-12 py-16">
+    <section className="w-7xl max-w-full mx-auto px-6 lg:px-12 py-16">
       <div className="flex justify-between items-baseline mb-8 pb-4 border-b border-[#cec8c0]">
         <h3 className="font-display font-light text-[1.3rem] text-[#1c1a17]">
           Recent journal entries
@@ -52,57 +59,21 @@ function RecentJournalEntries({ posts = [] }) {
           onClick={(e) => go(e, "/journal")}
           className="font-mono text-[0.6rem] tracking-[0.14em] uppercase text-[#9e9890] hover:text-[#8b6f4e] transition-colors no-underline"
         >
-          View all →
+          View all -&gt;
         </a>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {posts.slice(0, 3).map((p) => {
-          const href = `/journal/${p.slug}`;
-          return (
-            <a
-              key={p._id || p.slug}
-              href={href}
-              onClick={(e) => go(e, href)}
-              className="group block bg-[#eae6e0] hover:bg-[#cec8c0] rounded-[1rem] overflow-hidden transition-colors no-underline"
-            >
-              <div className="w-full">
-                <div className="w-full">
-                  {p.heroImage ? (
-                    <SmartImage
-                      image={p.heroImage}
-                      alt=""
-                      sizes="(max-width: 767px) 100vw, 33vw"
-                      radius="1rem"
-                      className="w-full"
-                    />
-                  ) : (
-                    <div className="aspect-[4/3] w-full bg-gradient-to-br from-[#8090b0] to-[#607090]" />
-                  )}
-                </div>
-              </div>
-              <div className="p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <CategoryPill
-                    post={p}
-                    className="!text-[0.5rem] !px-[0.4rem] !py-[0.15rem]"
-                  />
-                  <span className="font-mono text-[0.57rem] tracking-[0.08em] text-[#9e9890]">
-                    {formatDate(p.publishedAt || p._createdAt)}
-                  </span>
-                </div>
-                <p className="font-display font-light text-[1.15rem] leading-[1.3] text-[#1c1a17]">
-                  {p.title}
-                </p>
-              </div>
-            </a>
-          );
-        })}
+      <div
+        className="recent-journal-grid grid grid-cols-1 gap-8 items-start"
+        style={{ "--recent-journal-columns": columns }}
+      >
+        {displayPosts.map((post) => (
+          <JournalCard key={post._id || post.slug} post={post} />
+        ))}
       </div>
-    </div>
+    </section>
   );
 }
 
-// MAIN PAGE
 export default function JournalEntryPage() {
   const { post, recentPosts = [] } = useData();
   const readTime = useMemo(() => getReadingTime(post?.body), [post?.body]);
@@ -125,7 +96,7 @@ export default function JournalEntryPage() {
             onClick={(e) => go(e, "/journal")}
             className="inline-flex items-center gap-2 font-mono text-[0.6rem] tracking-[0.14em] uppercase text-[#9e9890] hover:text-[#1c1a17] transition-colors mb-10 no-underline"
           >
-            ← Journal
+            &lt;- Journal
           </a>
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <CategoryPill post={post} />
@@ -136,7 +107,7 @@ export default function JournalEntryPage() {
             )}
             {readTime && (
               <>
-                <span className="text-[#cec8c0]">·</span>
+                <span className="text-[#cec8c0]">/</span>
                 <span className="font-mono text-[0.6rem] tracking-[0.12em] text-[#9e9890]">
                   {readTime}
                 </span>
@@ -167,6 +138,12 @@ export default function JournalEntryPage() {
           </div>
         )}
 
+        <ContactNudge
+          title="Want Faruk to photograph something unfolding?"
+          description="For commissions, performance coverage, or documentary access, send a direct note with the story, date, and setting."
+          className="mt-8"
+        />
+
         <Newsletter />
         <RecentJournalEntries posts={recentPosts} />
 
@@ -176,17 +153,16 @@ export default function JournalEntryPage() {
       </main>
 
       <style>{`
-        .article-body > p, .article-body > h2, .article-body > h3, 
+        .article-body > p, .article-body > h2, .article-body > h3,
         .article-body > ul, .article-body > ol, .article-body > blockquote,
         .article-body figure, .article-body img {
           max-width: 42rem;
           margin-left: auto;
           margin-right: auto;
-          display: block; /* Required for single images to align correctly */
+          display: block;
         }
 
-        /* Make ONLY the Bento Gallery wider than the text */
-        .article-body figure, 
+        .article-body figure,
         .article-body img,
         .article-body .bento-gallery {
           max-width: 64rem;
@@ -197,6 +173,12 @@ export default function JournalEntryPage() {
 
         .reveal-block { opacity: 0; transform: translateY(16px); transition: opacity 0.8s ease, transform 0.8s ease; }
         .reveal-block.revealed { opacity: 1; transform: translateY(0); }
+
+        @media (min-width: 768px) {
+          .recent-journal-grid {
+            grid-template-columns: var(--recent-journal-columns);
+          }
+        }
       `}</style>
     </LightboxProvider>
   );

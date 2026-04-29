@@ -4,8 +4,9 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { NavItem } from "./NavItem";
 import { ensureLeadingSlash, isExternal, makeNavClick } from "@/lib/links";
+import { mailtoHref } from "@/lib/contact";
 
-export function Navbar({ items = [], darkHero = false }) {
+export function Navbar({ items = [], contact = {}, darkHero = false }) {
   const [open, setOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(!darkHero);
 
@@ -13,6 +14,7 @@ export function Navbar({ items = [], darkHero = false }) {
   const goMobile = React.useMemo(() => makeNavClick({ setOpen }), []);
 
   const allItems = [{ href: "/", title: "Home" }, ...items];
+  const hireHref = mailtoHref(contact.email);
 
   // Transparent → opaque on scroll
   React.useEffect(() => {
@@ -69,8 +71,7 @@ export function Navbar({ items = [], darkHero = false }) {
 
         {/* Desktop CTA */}
         <a
-          href="/contact"
-          onClick={(e) => go(e, "/contact")}
+          href={hireHref}
           className={[
             "hidden md:inline-flex font-mono text-[0.65rem] tracking-[0.13em] uppercase",
             "px-4 py-[0.4rem] border rounded-[3px] no-underline",
@@ -82,7 +83,7 @@ export function Navbar({ items = [], darkHero = false }) {
               : "text-[rgba(242,237,230,0.7)] border-[rgba(242,237,230,0.25)]",
           ].join(" ")}
         >
-          Hire me
+          Contact me
         </a>
 
         {/* Mobile trigger */}
@@ -142,8 +143,8 @@ export function Navbar({ items = [], darkHero = false }) {
             </nav>
 
             <a
-              href="/contact"
-              onClick={(e) => goMobile(e, "/contact")}
+              href={hireHref}
+              onClick={() => setOpen(false)}
               className={[
                 "mt-8 flex justify-center font-mono text-[0.65rem] tracking-[0.13em] uppercase",
                 "px-4 py-3 border border-[rgba(139,111,78,0.4)] rounded-[3px]",
@@ -151,7 +152,7 @@ export function Navbar({ items = [], darkHero = false }) {
                 "transition-all hover:bg-[#8b6f4e] hover:text-[#eae6e0] hover:border-[#8b6f4e]",
               ].join(" ")}
             >
-              Hire me
+              Contact me
             </a>
           </SheetContent>
         </Sheet>

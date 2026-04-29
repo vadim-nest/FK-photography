@@ -108,7 +108,7 @@ export function JournalCard({ post }) {
   const dateStr = post?.publishedAt
     ? new Date(post.publishedAt).toLocaleDateString("en-GB", {
         day: "numeric",
-        month: "short",
+        month: "long",
         year: "numeric",
       })
     : null;
@@ -126,7 +126,7 @@ export function JournalCard({ post }) {
       >
         <div className="flex items-center justify-between mb-[0.6rem]">
           <CategoryPill category={categoryLabel} />
-          <span className="font-mono text-[0.6rem] tracking-[0.08em] text-[#9e9890]">
+          <span className="font-mono text-[0.75rem] tracking-[0.08em] text-[#9e9890]">
             {[dateStr, readTime].filter(Boolean).join(" · ")}
           </span>
         </div>
