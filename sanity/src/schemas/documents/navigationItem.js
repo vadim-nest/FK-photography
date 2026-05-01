@@ -23,7 +23,7 @@ export default defineType({
       name: 'internalRef',
       title: 'Internal reference',
       type: 'reference',
-      to: [{type: 'page'}, {type: 'story'}, {type: 'gallery'}, {type: 'documentaryHubSettings'}],
+      to: [{type: 'documentaryHubSettings'}],
       hidden: ({parent}) => parent?.linkType !== 'internal',
       validation: (Rule) =>
         Rule.custom((val, ctx) => {
