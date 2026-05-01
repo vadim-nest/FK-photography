@@ -138,18 +138,15 @@ export default function JournalEntryPage() {
           </div>
         )}
 
+        <YourView className="mt-8" />
+
         <ContactNudge
           title="Want Faruk to photograph something unfolding?"
           description="For commissions, performance coverage, or documentary access, send a direct note with the story, date, and setting."
-          className="mt-8"
         />
 
-        <Newsletter />
         <RecentJournalEntries posts={recentPosts} />
-
-        <div className="w-7xl max-w-full mx-auto px-6 lg:px-12">
-          <YourView />
-        </div>
+        <Newsletter />
       </main>
 
       <style>{`

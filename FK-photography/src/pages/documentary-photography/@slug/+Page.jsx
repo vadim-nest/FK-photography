@@ -472,6 +472,8 @@ function ProjectContent({ project }) {
         )}
       </div>
 
+      <YourView />
+
       <ContactNudge
         title="Have a story that needs this kind of attention?"
         description="For documentary commissions, community stories, rehearsals, performances, or editorial work, email Faruk with the project, place, and rough timing."
@@ -482,10 +484,6 @@ function ProjectContent({ project }) {
         italicTitle="from the field"
         description="New work and process notes, sent sparingly. Never sold."
       />
-
-      <div className="pt-24 pb-32 max-w-[90vw] mx-auto">
-        <YourView />
-      </div>
 
       <style>{`
         .reveal-block { opacity: 0; transform: translateY(16px); transition: opacity 0.8s ease, transform 0.8s ease; }
