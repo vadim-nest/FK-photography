@@ -5,7 +5,7 @@ const GAP = 11;
 const TARGET_ROW_HEIGHT = 400; // Adjust this to make rows taller or shorter
 
 export function BentoGrid({ value, onImageClick }) {
-  const images = value?.images || [];
+  const images = value?.images;
   const containerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -21,7 +21,7 @@ export function BentoGrid({ value, onImageClick }) {
 
   // 2. The Justified Math Algorithm
   const rows = useMemo(() => {
-    if (!images.length || containerWidth === 0) return [];
+    if (!images?.length || containerWidth === 0) return [];
 
     const validImages = images.filter(
       (img) => img.dimensions?.width && img.dimensions?.height,
